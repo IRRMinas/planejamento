@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planejamento estratégico – Fiocruz Minas</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+:root{--side:#0a3039;--hero:#0b3b45;--pri:#0e5a63;--mint:#1fbf9a;--bg:#f1f5f6;--card:#fff;--soft:#f6f9fa;--ln:#e2e8ea;--tx:#15282d;--mu:#667b82;--ok:#0f9d6e;--warn:#d98a00;--bad:#d6334a;--wait:#4a6fa5;--inp:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1a1e;--card:#12262b;--soft:#173036;--ln:#244249;--tx:#e6f0f1;--mu:#8fa8ad;--pri:#3cb5b0}}
+:root[data-theme=dark]{--bg:#0b1a1e;--card:#12262b;--soft:#173036;--ln:#244249;--tx:#e6f0f1;--mu:#8fa8ad;--pri:#3cb5b0;--inp:#0f2328}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--inp:#0f2328}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;font-size:13px;padding-top:env(safe-area-inset-top,0px)}
+aside{width:236px;background:var(--side);color:#bcd3d6;display:flex;flex-direction:column;padding:22px 14px;flex-shrink:0}
+.logo{display:flex;gap:11px;align-items:center;padding:0 8px 18px;border-bottom:1px solid #ffffff1f;margin-bottom:12px}
+.logo i{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--mint),#0e8f8a);display:grid;place-items:center;color:#06303a;font-weight:800;font-style:normal}
+.logo b{color:#fff;font-size:14px;line-height:1.15;display:block}.logo small{font-size:10.5px;opacity:.7}
+.sec{font-size:11px;opacity:.55;padding:14px 10px 6px}
+.nav{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:inherit;font:inherit;font-weight:500;padding:11px 12px;border-radius:10px;cursor:pointer;text-align:left;margin-bottom:2px}
+.nav:hover{background:#ffffff12}.nav.on{background:#ffffff1f;color:#fff;box-shadow:inset 3px 0 var(--mint)}
+.nav u{text-decoration:none;width:18px;text-align:center;opacity:.8}
+.cycle{padding:18px 10px}.cycle b{font-size:24px;color:#fff;font-weight:600;letter-spacing:-.02em}.cycle div{height:4px;border-radius:4px;background:#ffffff22;margin:10px 0 8px}.cycle div i{display:block;width:25%;height:100%;border-radius:4px;background:var(--mint)}.cycle small{font-size:10.5px;opacity:.7}
+.sp{flex:1}.pilot{font-size:10.5px;opacity:.65;padding:12px 10px 0;border-top:1px solid #ffffff1f;margin-top:8px}
+main{flex:1;overflow:auto;min-width:0}
+.top{position:sticky;top:0;z-index:5;height:56px;background:var(--card);border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-size:12px;color:var(--mu)}
+.top b{color:var(--tx);font-weight:600}.top span:last-child{display:flex;gap:8px}
+.wrap{padding:30px 32px 40px;max-width:1280px;margin:0 auto}
+h1{font-size:28px;font-weight:700;letter-spacing:-.03em}.sub{color:var(--mu);margin-top:5px}h3{font-size:17px;font-weight:700}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}
+.btn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--ln);background:var(--card);border-radius:10px;padding:9px 14px;cursor:pointer;color:var(--tx);display:inline-flex;gap:7px;align-items:center;justify-content:center}
+.btn:hover{border-color:var(--pri)}.btn.p{background:var(--pri);color:#fff;border-color:var(--pri)}.btn.g{background:var(--ok);border-color:var(--ok);color:#fff}.btn.d{color:var(--bad)}.btn.w{width:100%;padding:12px}.btn:focus-visible,.nav:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+.bar{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px 16px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.bar label{display:block;font-size:11px;color:var(--mu);margin-bottom:5px;font-weight:600}.bar .f{flex:1;min-width:190px}.bar select,.bar input{width:100%}
+select,input,textarea{font:inherit;font-size:12.5px;border:1px solid var(--ln);border-radius:9px;padding:9px 11px;background:var(--inp);color:var(--tx);outline:none}
+select:focus,input:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px #1fbf9a30}
+.yrs{display:flex;background:var(--soft);border-radius:10px;padding:3px;gap:2px}.yrs button{border:0;background:none;font:inherit;font-weight:600;padding:8px 13px;border-radius:8px;cursor:pointer;color:var(--mu)}.yrs button.on{background:var(--pri);color:#fff}
+.hero{background:linear-gradient(120deg,var(--hero),#0d4f56);color:#fff;border-radius:18px;padding:30px 34px;display:grid;grid-template-columns:1.1fr 1.3fr auto;gap:34px;align-items:center;margin-bottom:18px}
+.hero small{display:inline-block;font-size:11.5px;font-weight:600;color:#7ff0d3;background:#ffffff14;padding:4px 10px;border-radius:7px;margin-bottom:12px}
+.hero h2{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.25}.hero p{font-size:15px;line-height:1.65;color:#d5ecee}
+.hero>div:nth-child(2){border-left:1px solid #ffffff26;padding-left:34px}
+.ring{position:relative;width:104px;height:104px}.ring svg{transform:rotate(-90deg)}.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:20px;font-weight:800}.ring span{display:block;text-align:center;font-size:11px;color:#a9d3d6;margin-top:6px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:26px}
+.kpi{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px 18px;border-top:3px solid var(--c,var(--ln))}.kpi span{color:var(--mu);font-weight:600;font-size:12px}.kpi b{display:block;font-size:28px;font-weight:800;margin:4px 0 2px;color:var(--c,var(--tx))}.kpi small{color:var(--mu);font-size:11px}
+.tools{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}.tools .r{display:flex;gap:10px;flex-wrap:wrap}
+.cnt{background:var(--soft);border-radius:6px;padding:1px 8px;font-size:11px;margin-left:8px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.card .in{padding:20px 20px 16px;flex:1;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.chip{font-size:11px;font-weight:600;color:var(--mu);background:var(--soft);padding:4px 9px;border-radius:7px;max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;display:inline-flex;gap:6px;align-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent);white-space:nowrap}.badge:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c)}
+.pend{--c:var(--mu)}.wait{--c:var(--wait)}.ok{--c:var(--ok)}.warn{--c:var(--warn)}.bad{--c:var(--bad)}
+.nm{font-size:16px;font-weight:700;line-height:1.4;letter-spacing:-.01em}.just{color:var(--mu);line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.goal{background:var(--soft);border-radius:12px;padding:14px 16px}.goal .row{align-items:flex-end}.goal small{color:var(--mu);font-size:11px;font-weight:600}.goal b{display:block;font-size:22px;font-weight:800}.goal .res{text-align:right;color:var(--pri)}
+.pb{height:7px;border-radius:5px;background:var(--ln);margin:10px 0 6px;overflow:hidden}.pb i{display:block;height:100%;background:var(--c);border-radius:5px}.goal .pc{display:flex;justify-content:space-between;font-size:11px;color:var(--mu)}
+.sems{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sem{border:1px solid var(--ln);border-radius:12px;padding:11px 14px}.sem div{font-size:11px;font-weight:600;color:var(--mu);display:flex;justify-content:space-between;align-items:center}.sem b{font-size:19px;font-weight:800;display:block;margin:3px 0 1px}.sem small{font-size:11px;color:var(--mu)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.traj{display:flex;gap:6px}.traj span{flex:1;text-align:center;font-size:10.5px;color:var(--mu);padding:5px 2px;border-radius:8px;border:1px solid var(--ln);line-height:1.3}.traj span.on{border-color:var(--pri);color:var(--tx);background:var(--soft)}.traj b{display:block;font-size:11.5px}
+.note{font-size:11.5px;line-height:1.5;color:var(--mu);border-left:3px solid var(--ln);padding-left:10px}.note b{color:var(--tx)}.note.an{border-color:var(--warn)}
+.foot{display:flex;justify-content:space-between;gap:8px;padding:12px 16px;border-top:1px solid var(--ln);background:var(--soft)}
+.tw{background:var(--card);border:1px solid var(--ln);border-radius:16px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{font-size:11.5px;font-weight:600;color:var(--mu);text-align:left;padding:13px 14px;background:var(--soft);border-bottom:1px solid var(--ln)}
+td{padding:14px;border-bottom:1px solid var(--ln);vertical-align:middle}tr:last-child td{border:0}
+td.nm2{max-width:380px;font-weight:700;font-size:13px;line-height:1.4}td.nm2 small{display:block;font-weight:400;color:var(--mu);font-size:11px;margin-top:5px}
+td input{width:70px;padding:7px 8px;text-align:center;font-weight:600}.pair{display:flex;gap:4px;align-items:center}.pair span{color:var(--mu)}.pair+small{display:block;font-size:11px;font-weight:700;margin-top:5px;color:var(--pri)}
+.cm{background:var(--soft)}.big{font-size:15px;font-weight:800;color:var(--pri)}
+.ic{border:0;background:none;cursor:pointer;font-size:15px;color:var(--mu);padding:6px;border-radius:8px}.ic:hover{background:var(--soft);color:var(--pri)}
+.prog{margin-top:16px;display:flex;align-items:center;gap:14px;font-size:12px;color:var(--mu)}.prog .t{flex:1;max-width:340px;height:6px;border-radius:5px;background:var(--ln)}.prog .t i{display:block;height:100%;background:var(--mint);border-radius:5px}
+.v{display:none}.v.on{display:block}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.pan{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:28px}.pan h3{font-size:20px;margin:14px 0 8px}.pan p{color:var(--mu);line-height:1.65;margin-bottom:16px}
+.ico{width:48px;height:48px;border-radius:13px;background:color-mix(in srgb,var(--mint) 18%,transparent);display:grid;place-items:center;font-size:20px;color:var(--pri)}
+.drop{border:1.5px dashed var(--pri);border-radius:14px;padding:36px 16px;text-align:center;cursor:pointer;color:var(--pri)}.drop.hv{background:var(--soft)}.drop small{display:block;color:var(--mu);margin-top:6px}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.steps span{background:var(--soft);padding:8px 14px;border-radius:9px;font-weight:600;font-size:12px}
+.fld{margin-bottom:14px;display:flex;flex-direction:column;gap:6px}.fld label{font-size:12px;font-weight:600}.fld input,.fld select,.fld textarea{width:100%}.fld small{color:var(--mu)}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.ov{position:fixed;inset:0;background:#06202999;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:30;padding:20px}.ov.on{display:flex}
+.md{background:var(--card);border-radius:18px;width:100%;max-width:700px;max-height:92vh;overflow:auto;box-shadow:0 24px 70px #0005}
+.mh{padding:22px 28px;background:var(--hero);color:#fff;display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0}.mh small{font-size:12px;color:#7ff0d3;font-weight:600}.mh h3{margin-top:3px}.mh button{border:0;background:none;color:#fff;font-size:24px;cursor:pointer;line-height:1}
+.mb{padding:24px 28px}.mf{padding:14px 28px;border-top:1px solid var(--ln);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.blk{background:var(--soft);border:1px solid var(--ln);border-radius:14px;padding:18px;margin-bottom:14px}.blk h4{font-size:12.5px;margin-bottom:12px;color:var(--pri)}.blk.m{background:color-mix(in srgb,var(--mint) 12%,transparent)}
+.rc{display:flex;justify-content:space-between;color:var(--mu);font-size:12px;margin-top:6px}.rc b{color:var(--tx)}
+.toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--hero);color:#fff;padding:12px 20px;border-radius:11px;opacity:0;transition:.3s;pointer-events:none;z-index:40}.toast.on{opacity:1}
+.err{color:var(--bad);font-size:12px;margin-top:10px;line-height:1.6}.foot2{margin-top:36px;padding-top:14px;border-top:1px solid var(--ln);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--mu)}
+body.pres aside,body.pres .top{display:none}
+@media print{aside,.top,.btn,.tools .r,.bar,.foot{display:none!important}body{display:block}}
+@media(max-width:960px){body{flex-direction:column;height:auto}aside{width:100%;flex-direction:row;overflow-x:auto;padding:10px;align-items:center;gap:4px}aside .logo,aside .sec,aside .cycle,aside .pilot,aside .sp{display:none}.nav{width:auto;white-space:nowrap}main{overflow:visible}.wrap{padding:20px 16px}.top{padding:0 16px}.hero,.two{grid-template-columns:1fr}.hero>div:nth-child(2){border:0;padding:0}.kpis{grid-template-columns:1fr 1fr}.r2,.r3{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.card{cursor:pointer;transition:border-color .15s}.card:hover,.card:focus-visible{border-color:var(--c);outline:none}
+.big2{font-size:28px;font-weight:800;color:var(--c);letter-spacing:-.02em}.mt{color:var(--mu);font-size:12px;font-weight:600}
+.mc .pb{margin:8px 0 10px}.mc .pc{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--mu);gap:8px}.mc .pc span{display:flex;gap:5px;align-items:center}.mc .pc b{color:var(--c);font-weight:700}
+.list{background:var(--card);border:1px solid var(--ln);border-radius:16px;overflow:auto}
+.lh,.rw{display:grid;grid-template-columns:minmax(230px,2.6fr) .8fr .9fr 1.5fr .9fr .9fr;gap:14px;align-items:center;padding:13px 18px;min-width:780px}
+.lh{font-size:11.5px;font-weight:600;color:var(--mu);background:var(--soft);border-bottom:1px solid var(--ln)}
+.rw{border-bottom:1px solid var(--ln);cursor:pointer}.rw:last-child{border:0}.rw:hover,.rw:focus-visible{background:var(--soft);outline:none}.rw b{font-weight:700;line-height:1.35;display:block}.rw small{color:var(--mu);font-size:11px}
+.rw .al{display:flex;align-items:center;gap:8px}.rw .al .pb{flex:1;margin:0}.rw .al em{font-style:normal;font-weight:700;color:var(--c);min-width:50px;text-align:right}.rw .rs{font-weight:800;color:var(--c)}.sd{display:flex;gap:6px;align-items:center;font-weight:600}
+.proj{background:var(--card);border:1px solid var(--ln);border-left:4px solid var(--mint);border-radius:14px;padding:14px 18px;margin-bottom:18px}.proj small{font-size:11.5px;font-weight:700;color:var(--pri)}.proj p{margin-top:5px;line-height:1.55;font-weight:600;font-size:14px}
+.cl2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fx{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--soft);border:1px solid var(--ln);border-left:4px solid var(--c);border-radius:10px;padding:10px 14px;font-size:12.5px}.fx b{min-width:72px;color:var(--c)}.fld .fx input{width:84px}.fx .dot{flex-shrink:0}
+.fxbar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin-top:12px;background:var(--ln)}.fxbar i{display:block;height:100%;background:var(--c)}
+.leg{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 0}.leg span{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;background:var(--soft);border:1px solid var(--ln);border-radius:99px;padding:5px 12px}
+.chk{display:inline-flex;gap:7px;align-items:center;font-size:12px;font-weight:600;cursor:pointer;color:var(--tx)}.chk input{width:auto;padding:0;accent-color:var(--pri)}
+.rp{font-weight:800;color:var(--c)}.rep table{min-width:760px}.rep td:not(.nm2){white-space:nowrap}
+.hm{width:18px;height:18px;border-radius:5px;background:var(--c);cursor:pointer;display:inline-block}
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo"><i>F</i><div><b>FIOCRUZ MINAS</b><small>Instituto René Rachou</small></div></div>
+  <div class="sec">Acompanhamento</div>
+  <button class="nav on" data-t="dash" onclick="go('dash')"><u>◧</u>Dashboard</button>
+  <button class="nav" data-t="grade" onclick="go('grade')"><u>▦</u>Grade semestral</button>
+  <button class="nav" data-t="rel" onclick="go('rel')"><u>▤</u>Relatório</button>
+  <button class="nav" data-t="plan" onclick="go('plan')"><u>⇅</u>Central de planilhas</button>
+  <div class="sec" style="margin-top:14px">Ciclo estratégico</div>
+  <div class="cycle"><b>2026 — 2029</b><div><i></i></div><small>Monitoramento semestral</small></div>
+  <div class="sp"></div>
+  <button class="nav" data-t="cfg" onclick="go('cfg')"><u>⚙</u>Configurações</button>
+  <div class="pilot"><b>Versão piloto</b><br>Modelo para apresentação à coordenação.</div>
+</aside>
+<main>
+  <div class="top"><span>Planejamento institucional &nbsp;›&nbsp; <b id="crumb">Dashboard</b></span><span><button class="btn" onclick="apresentar()">▭ Apresentar</button><button class="btn" onclick="print()" aria-label="Imprimir">🖶</button></span></div>
+  <div class="wrap">
+  <section class="v on" id="v-dash">
+    <div class="head"><div><h1 class="ttl"></h1><p class="sub">Uma visão clara dos objetivos, das metas e dos resultados.</p></div><button class="btn p" onclick="edit()">＋ Novo indicador</button></div>
+    <div class="bar fb"></div>
+    <div class="hero" id="hero"></div>
+    <div class="proj" id="proj"></div>
+    <div class="note" id="resumo" style="margin-bottom:16px;font-size:12.5px"></div><div class="kpis" id="kpis"></div><div id="eixosCards"></div><div id="mapa"></div>
+    <div class="tools"><div><h3 style="display:inline">Indicadores e metas</h3><span class="cnt" id="cnt"></span></div><div class="r"><div class="yrs" id="vt"></div><input id="q" placeholder="Buscar indicador" oninput="S.q=this.value;render()"></div></div>
+    <div class="grid" id="cards"></div>
+  </section>
+  <section class="v" id="v-grade">
+    <div class="head"><div><h1>Grade semestral</h1><p class="sub">Digite direto nas células ou abra a calculadora em “Lançar”.</p></div><button class="btn g" onclick="expGrade()">⇩ Exportar planilha</button></div>
+    <div class="bar fb"></div>
+    <div class="tw"><table><thead><tr><th>Indicador</th><th class="cm">Meta</th><th>1º semestre (nº / total)</th><th>2º semestre (nº / total)</th><th>Consolidado</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="prog"><span id="pgT"></span><div class="t"><i id="pgB" style="width:0"></i></div></div>
+  </section>
+  <section class="v" id="v-rel">
+    <div class="head"><div><h1>Relatório de desempenho</h1><p class="sub">Por eixo, projeto e dimensão · 1º semestre, 2º semestre e anual.</p></div><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center"><label class="chk"><input type="checkbox" id="rCor" checked> Mostrar cores (verde / amarelo / vermelho)</label><button class="btn g" onclick="expRel()">⇩ Exportar relatório (Excel)</button></div></div>
+    <div class="bar fb"></div>
+    <div class="kpis" id="rk"></div>
+    <div class="note">Desempenho = média ponderada (peso do indicador; atingimento limitado a 100%) do atingimento da meta anual (resultado ÷ meta) dos indicadores com resultado lançado. Cada semestre é comparado à meta do ano; “Anual” usa o consolidado dos dois semestres.</div>
+    <div id="leg" class="leg"></div>
+    <div id="rb"></div>
+  </section>
+  <section class="v" id="v-plan">
+    <div class="head"><div><h1>Central de planilhas</h1><p class="sub">Amplie o planejamento e atualize os dados sem usar código.</p></div><button class="btn p" onclick="edit()">＋ Novo indicador</button></div>
+    <div class="two">
+      <div class="pan"><div class="ico">⇩</div><h3>1. Leve os dados para o Excel</h3><p>Exporte o cadastro completo, as metas de cada ano e os resultados semestrais. Edite a planilha para cadastrar novos eixos e indicadores.</p><button class="btn p w" onclick="expTudo()">Exportar dados atuais</button><div style="height:10px"></div><button class="btn w" onclick="expModelo()">Baixar modelo em branco</button></div>
+      <div class="pan"><div class="ico">⇧</div><h3>2. Importe com segurança</h3><p>Você verá uma prévia antes de confirmar qualquer alteração. Aceita o modelo do painel ou a planilha de projeto (abas “projeto” e “indicadores”).</p><div class="drop" id="drop" onclick="fi.click()"><b>Selecionar ou arrastar planilha</b><small>.xlsx, .xls ou .csv · até 10 MB</small></div><input type="file" id="fi" accept=".xlsx,.xls,.csv" hidden></div>
+    </div>
+    <div class="pan"><h3 style="margin-top:0">Uma planilha, cinco elementos</h3><div class="steps"><span>Eixo estratégico</span><span>Objetivo estratégico</span><span>Projeto estratégico</span><span>Indicador</span><span>Meta e semestres</span></div><p style="margin:0">Mantenha o ID para atualizar um indicador; use um ID novo para cadastrar outro. Cada linha atualiza o ano informado e os demais anos permanecem.</p></div>
+  </section>
+  <section class="v" id="v-cfg">
+    <div class="head"><div><h1>Configurações</h1><p class="sub">Ajustes locais para a apresentação do piloto.</p></div></div>
+    <div class="pan" style="max-width:760px"><h3 style="margin-top:0">Identidade e acompanhamento</h3><br>
+      <div class="fld"><label>Título do painel</label><input id="cTit"></div>
+      <div class="fld"><label>Instituição</label><input id="cInst"></div>
+      <div class="fld"><label>Faixas de desempenho (% da meta anual)</label>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="fx bad"><i class="dot"></i><b>Vermelho</b><span>Abaixo de</span><input id="cVm" type="number" min="1" max="98" step="1" oninput="cfgPrev()"><span>%</span></div>
+          <div class="fx warn"><i class="dot"></i><b>Amarelo</b><span>De <u id="cAmDe"></u>% até</span><input id="cAm" type="number" min="1" max="99" step="1" oninput="cfgSync('am')"><span>%</span></div>
+          <div class="fx ok"><i class="dot"></i><b>Verde</b><span>A partir de</span><input id="cVd" type="number" min="2" max="100" step="1" oninput="cfgSync('vd')"><span>% (inclui 100% ou mais)</span></div>
+        </div>
+        <div class="fxbar" id="cFxBar"></div>
+        <small>Os limites são ligados: ao mudar o fim do amarelo, o início do verde acompanha (e vice-versa). Exemplo: amarelo até 70 → verde a partir de 71. Valores quebrados, como 70,9%, ainda contam como amarelo.</small></div>
+      <div class="fld"><label>Aparência</label><select id="cTh" style="width:200px"><option value="">Automática</option><option value="light">Clara</option><option value="dark">Escura</option></select></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn d" onclick="resetDados()">Restaurar dados do piloto</button><button class="btn p" onclick="cfgSalvar()">Salvar configurações</button></div></div>
+  </section>
+  <div class="foot2"><span id="fInst"></span><span>● Modelo piloto · dados salvos neste navegador</span></div>
+  </div>
+</main>
+<div class="ov" id="ov" onclick="if(event.target==this)fechar()"><div class="md" id="md"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ANOS=[2026,2027,2028,2029],KEY='painel_fiocruz_unificado_v3';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>(v===''||v==null||isNaN(+v))?null:+v,nv=v=>v==null?'':v;
+const mk=(m,a,b,o='')=>({meta:m,s1:a?[...a]:[null,null],s2:b?[...b]:[null,null],obs:o});
+const CFG0={titulo:'Painel executivo de indicadores e metas',inst:'Fiocruz Minas · Instituto René Rachou',verm:50,verde:71,tema:''};
+const EIXO1='Melhoria do ambiente e promoção do bem-estar',OBJ1='Melhorar o ambiente de trabalho com foco no bem-estar da comunidade institucional.';
+const PROJ1='Implementar o mapeamento de competências, com delineamento de planos de desenvolvimento individual e de formação continuada, desenvolvimento contínuo, dimensionamento da força de trabalho e remanejamento interno.';
+const PROJ2='Valorizar as pessoas, aumentar o engajamento, a motivação e o pertencimento, visando a melhoria do bem-estar individual e do clima organizacional.';
+const SEED=()=>({cfg:{...CFG0},eixos:[{n:1,nome:EIXO1,obj:OBJ1}],projs:[{id:'p1',eixo:1,nome:PROJ1},{id:'p2',eixo:1,nome:PROJ2}],inds:[
+{id:'1.1',eixo:1,proj:'p1',dim:'Processos Internos e Desenvolvimento Institucional',nome:'% de setores com mapeamento de competências concluído em relação ao planejado',un:'%',a:'Nº de setores com mapeamento concluído',b:'Nº total de setores planejados',formula:'(Número de setores com todas as etapas do mapeamento concluídas no período / Número total de setores planejados para o período) × 100',just:'Mede o grau de implantação do programa de mapeamento de competências e verifica o alcance institucional do projeto, garantindo que os setores disponham de informações qualificadas para gestão das pessoas e desenvolvimento das equipes.',
+ anos:{2026:mk(80,[8,10],[11,12],'No 1º semestre 8 dos 10 setores concluíram o mapeamento (80%). No 2º semestre alcançamos 11 de 12 setores (91,7%).'),2027:mk(85),2028:mk(90),2029:mk(100)}},
+{id:'1.2',eixo:1,proj:'p1',dim:'Aprendizagem e Crescimento',nome:'% de ações dos PDIs executadas',un:'%',a:'Nº de ações dos PDIs concluídas',b:'Nº total de ações previstas nos PDIs',formula:'(Número de ações dos PDIs concluídas / Número total de ações previstas nos PDIs) × 100',just:'Avalia se os Planos de Desenvolvimento Individual (PDIs) gerados a partir do mapeamento de competências estão sendo efetivamente implementados. Demonstra o comprometimento dos trabalhadores, lideranças e da instituição com o desenvolvimento das competências identificadas.',
+ anos:{2026:mk(75,[34,50],[48,60],'Aumento expressivo da execução das ações de capacitação e desenvolvimento individual no 2º semestre.'),2027:mk(80),2028:mk(85),2029:mk(90)}},
+{id:'1.3',eixo:1,proj:'p1',dim:'Pessoas e Cultura Organizacional',nome:'Índice de satisfação com o programa',un:'nota',a:'Soma das notas dos participantes',b:'Nº total de respondentes',formula:'Soma das notas atribuídas pelos participantes ao programa / Número total de respondentes',just:'Avalia a percepção dos participantes quanto à qualidade, utilidade, transparência, aplicabilidade e contribuição do programa para seu desenvolvimento profissional e para a instituição.',
+ anos:{2026:mk(4.2,[185,45],[268,60],'Avaliação em escala de 1,0 a 5,0. Excelente percepção de utilidade e segurança psicológica nas equipes.'),2027:mk(null),2028:mk(null),2029:mk(null)}},
+{id:'2.1',eixo:1,proj:'p2',dim:'Promoção da Saúde e Bem-Estar',nome:'Número de ações voltadas à promoção do bem-estar no trabalho (rodas de conversa, atendimento psicológico, eventos de integração, campanhas de saúde etc.)',un:'num',a:'Nº de ações de bem-estar realizadas',b:'Nº de ações previstas no período (referência)',formula:'Somatório das ações de promoção do bem-estar realizadas no período',just:'Permite monitorar o esforço institucional destinado ao cuidado com a saúde física, mental e social dos trabalhadores, demonstrando o compromisso da organização com a qualidade de vida da comunidade institucional.',
+ anos:{2026:mk(12,[6,null],[7,null],'Realizadas 6 ações no 1º semestre e 7 ações no 2º semestre, totalizando 13 ações de promoção da saúde e bem-estar no ano.'),2027:mk(14),2028:mk(16),2029:mk(18)}},
+{id:'2.2',eixo:1,proj:'p2',dim:'Promoção da Saúde e Bem-Estar',nome:'% de ações de bem-estar realizadas em relação ao planejamento',un:'%',a:'Nº de ações de bem-estar realizadas',b:'Nº de ações de bem-estar planejadas',formula:'(Número de ações de bem-estar realizadas no período / Número de ações de bem-estar planejadas para o período) × 100',just:'Avalia o grau de execução das iniciativas. Permite monitorar o cumprimento do planejamento anual, identificar eventuais lacunas na oferta de ações e verificar o compromisso institucional com a promoção de ambientes de trabalho saudáveis.',
+ anos:{2026:mk(85,[6,7],[7,8],'Cumprimento consistente do cronograma de ações planejadas nos dois semestres.'),2027:mk(90),2028:mk(90),2029:mk(95)}},
+{id:'2.3',eixo:1,proj:'p2',dim:'Engajamento e Participação Institucional',nome:'% de adesão da comunidade às atividades oferecidas',un:'%',a:'Nº de participantes nas ações de bem-estar',b:'Nº de colaboradores elegíveis para participação',formula:'(Nº de participantes nas ações de bem-estar / Nº de colaboradores elegíveis para participação) × 100',just:'Avalia o alcance e a efetividade das iniciativas de bem-estar junto à comunidade institucional.',
+ anos:{2026:mk(70,[145,220],[168,220],'Crescimento na adesão após ampla divulgação e rodas de conversa nos setores.'),2027:mk(75),2028:mk(80),2029:mk(85)}},
+{id:'2.4',eixo:1,proj:'p2',dim:'Governança de Pessoas',nome:'Taxa de implementação das ações de melhoria do clima organizacional',un:'%',a:'Nº de ações de melhoria implementadas',b:'Nº total de ações previstas nos planos de melhoria',formula:'(Nº de ações de melhoria implementadas / Nº total de ações previstas nos planos de melhoria) × 100',just:'Verifica se os resultados das pesquisas de clima estão sendo efetivamente transformados em ações concretas de melhoria, fortalecendo a credibilidade da gestão e o ciclo de aprimoramento contínuo.',
+ anos:{2026:mk(80,[7,10],[9,10],'Plano de ação elaborado a partir da pesquisa de clima com execução progressiva ao longo dos semestres.'),2027:mk(85),2028:mk(90),2029:mk(95)}},
+{id:'2.5',eixo:1,proj:'p2',dim:'Aprendizagem e Crescimento (Pessoas)',nome:'Índice de Clima Organizacional',un:'%',a:'Somatório das pontuações obtidas nos itens da pesquisa',b:'Pontuação máxima possível',formula:'(Somatório das pontuações obtidas nos itens da pesquisa de clima / Pontuação máxima possível) × 100',just:'Mede a percepção dos colaboradores sobre aspectos como liderança, comunicação, reconhecimento, relacionamento interpessoal, condições de trabalho e pertencimento. É um importante termômetro da saúde organizacional e da efetividade das políticas de gestão de pessoas.',
+ anos:{2026:mk(80,[390,500],[415,500],'Evolução positiva nos indicadores de pertencimento, reconhecimento e qualidade das relações.'),2027:mk(82),2028:mk(85),2029:mk(88)}}]});
+const cleanProjNome=s=>String(s??'').replace(/^\s*\d+(?:\.\d+)*\s*[-·–—]\s*(?:Projeto\s*estrat[eé]gico\s*[-·–—:]?\s*)?/i,'').trim();
+let D;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!D||!D.inds)D=SEED();
+if(!D.projs){D.projs=SEED().projs;D.inds.forEach(i=>{if(!i.proj)i.proj=(D.projs.find(p=>p.eixo===i.eixo)||{}).id||''})}
+D.projs.forEach(p=>{p.nome=cleanProjNome(p.nome)});
+D.cfg=Object.assign({},CFG0,D.cfg||{});if(!(D.cfg.verm>0)||!(D.cfg.verde>D.cfg.verm)){D.cfg.verm=CFG0.verm;D.cfg.verde=CFG0.verde}
+const S={tab:'dash',eixo:0,proj:'',ano:2026,q:'',dim:''},cut=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
+const nf=(x,d)=>x.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fm=(x,i)=>x==null?'—':i.un==='%'?nf(x,1)+'%':i.un==='num'?nf(x,0):nf(x,2)+' / 5,0';
+const yr=(i,y)=>i.anos[y]||(i.anos[y]=mk(null));
+const razao=(i,v,m)=>v==null||!(m>0)?null:i.sent==='min'?(v<=0?1:m/v):v/m;
+const nPre=(i,d)=>[d.s1,d.s2].filter(s=>val(s,i.un)!=null).length;
+const metaEf=(i,d)=>i.un==='num'&&d.meta?d.meta*(nPre(i,d)||2)/2:d.meta;
+const pw=i=>i.peso>0?+i.peso:1;
+const wa=p=>{p=p.filter(x=>x[0]!=null);const w=p.reduce((a,x)=>a+x[1],0);return w?p.reduce((a,x)=>a+Math.min(x[0],1)*x[1],0)/w:null};
+const hoje=()=>new Date().toISOString().slice(0,10);
+const faixa=r=>r*100+1e-9>=D.cfg.verde?'ok':r*100+1e-9>=D.cfg.verm?'warn':'bad',FX={ok:'Bom desempenho',warn:'Em atenção',bad:'Abaixo da meta'};
+const fxTxt=()=>({ok:`${D.cfg.verde}% ou mais da meta`,warn:`De ${D.cfg.verm}% até menos de ${D.cfg.verde}%`,bad:`Menos de ${D.cfg.verm}% da meta`});
+const val=(s,u)=>u==='num'?(s[0]!=null?s[0]:null):(s[0]!=null&&s[1]>0?s[0]/s[1]*(u==='%'?100:1):null);
+const cons=(i,d)=>{const t=[d.s1,d.s2].filter(s=>val(s,i.un)!=null);if(!t.length)return null;return i.un==='num'?t.reduce((a,s)=>a+s[0],0):val([t.reduce((a,s)=>a+s[0],0),t.reduce((a,s)=>a+s[1],0)],i.un)};
+function stat(i,y){const d=yr(i,y),m=d.meta,c=cons(i,d);if(m==null||m<=0)return['pend','Meta a definir',null];if(c==null)return['wait','Aguardando resultado',null];
+ const r=razao(i,c,metaEf(i,d)),k=faixa(r);return[k,FX[k]+(nPre(i,d)===1?' · parcial':''),r]}
+const badge=s=>`<span class="badge ${s[0]}">${s[1]}</span>`;
+const eixoSel=()=>D.eixos.find(e=>e.n===S.eixo),eixoNome=n=>(D.eixos.find(e=>e.n===n)||{}).nome||'',projNome=id=>(D.projs.find(p=>p.id===id)||{}).nome||'';
+const doEixo=()=>D.inds.filter(i=>!S.eixo||i.eixo===S.eixo);
+const doProj=()=>doEixo().filter(i=>!S.proj||i.proj===S.proj),base=()=>doProj().filter(i=>!S.dim||i.dim===S.dim);
+const filt=()=>base().filter(i=>i.nome.toLowerCase().includes(S.q.toLowerCase()));
+const NOMES={dash:'Dashboard',grade:'Grade semestral',rel:'Relatório',plan:'Central de planilhas',cfg:'Configurações'};
+function go(t){S.tab=t;$$('.v').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));$$('.nav[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#crumb').textContent=NOMES[t];
+ if(t==='cfg'){$('#cTit').value=D.cfg.titulo;$('#cInst').value=D.cfg.inst;cfgPreencher();$('#cTh').value=D.cfg.tema||''}$('main').scrollTop=0;render()}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600)}
+function apresentar(){document.body.classList.toggle('pres');try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)document.body.classList.remove('pres')});
+const abrir=h=>{$('#md').innerHTML=h;$('#ov').classList.add('on')},fechar=()=>$('#ov').classList.remove('on');
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fechar()});
+function ring(p){const c=2*Math.PI*40,k=Math.min(p||0,1);return`<div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="40" fill="none" stroke="#ffffff22" stroke-width="9"/><circle cx="52" cy="52" r="40" fill="none" stroke="#3ee6bf" stroke-width="9" stroke-linecap="round" stroke-dasharray="${k*c} ${c}"/></svg><b>${p==null?'—':Math.round(p*100)+'%'}</b></div><span>Desempenho médio</span>`}
+function render(){
+ document.documentElement.dataset.theme=D.cfg.tema||'';
+ $$('.ttl').forEach(e=>e.textContent=D.cfg.titulo);$('#fInst').textContent=D.cfg.inst;
+ {const p=Math.max(0,Math.min(1,(Date.now()-new Date(2026,0,1))/(new Date(2030,0,1)-new Date(2026,0,1)))),ci=$('.cycle div i');if(ci)ci.style.width=Math.round(p*100)+'%'}
+ if(S.eixo&&!eixoSel())S.eixo=0;
+ const pjs=D.projs.filter(p=>!S.eixo||p.eixo===S.eixo);if(S.proj&&!pjs.find(p=>p.id===S.proj))S.proj='';
+ const dims=[...new Set(doProj().map(i=>i.dim).filter(Boolean))];if(S.dim&&!dims.includes(S.dim))S.dim='';
+ const hasF=Boolean(S.eixo||S.proj||S.dim);
+ $$('.fb').forEach(b=>b.innerHTML=`<div class="f"><label>Eixo estratégico</label><select onchange="S.eixo=+this.value;S.proj='';S.dim='';render()"><option value="0">Todos os eixos (${D.eixos.length})</option>${D.eixos.map(e=>`<option value="${e.n}" ${e.n===S.eixo?'selected':''}>Eixo ${e.n} · ${esc(e.nome)}</option>`).join('')}</select></div>
+ <div class="f"><label>Projeto estratégico</label><select onchange="S.proj=this.value;S.dim='';render()"><option value="">Todos os projetos (${pjs.length})</option>${pjs.map(p=>`<option value="${esc(p.id)}" title="${esc(p.nome)}" ${p.id===S.proj?'selected':''}>${esc(cut(p.nome,66))}</option>`).join('')}</select></div>
+ <div class="f"><label>Dimensão do indicador</label><select onchange="S.dim=this.value;render()"><option value="">Todas as dimensões (${dims.length})</option>${dims.map(d=>`<option ${d===S.dim?'selected':''}>${esc(d)}</option>`).join('')}</select></div>
+ <div><label>Ano de referência</label><div class="yrs">${ANOS.map(a=>`<button class="${a===S.ano?'on':''}" onclick="S.ano=${a};render()">${a}</button>`).join('')}</div></div>
+ ${hasF?`<button class="btn" onclick="S.eixo=0;S.proj='';S.dim='';render()" title="Limpar todos os filtros">✕ Limpar filtros</button>`:''}`);
+ const L=filt(),all=base(),y=S.ano,A=D.cfg.verm/100;
+ if(S.tab==='dash'){
+  const ex=eixoSel()||(D.eixos.length===1?D.eixos[0]:null),avg=wa(all.map(i=>[stat(i,y)[2],pw(i)]));
+  $('#hero').innerHTML=`<div><small>${ex?'Eixo estratégico '+ex.n:'Visão geral'}</small><h2>${ex?esc(ex.nome):'Todos os eixos'}</h2></div><div><small>Objetivo estratégico</small><p>${ex?'“'+esc(ex.obj)+'”':`${D.eixos.length} eixos e ${D.inds.length} indicadores no ciclo 2026–2029. Escolha um eixo para ver o objetivo.`}</p></div><div>${ring(avg)}</div>`;
+  const pj=S.proj?D.projs.find(p=>p.id===S.proj):(pjs.length===1?pjs[0]:null);
+  $('#proj').style.display=pjs.length?'':'none';$('#proj').innerHTML=pj?`<small>Projeto estratégico</small><p>${esc(pj.nome)}</p>`:`<small>Projetos estratégicos</small><p>${pjs.length} projetos ${S.eixo?'neste eixo':'no ciclo'}. Selecione um projeto para ver o nome completo.</p>`;
+  const st=all.map(i=>stat(i,y)[0]),c=k=>st.filter(s=>s===k).length;
+  $('#kpis').innerHTML=[['Total de indicadores',all.length,'Monitoramento semestral',''],[FX.ok,c('ok'),fxTxt().ok,'--ok'],[FX.warn,c('warn'),fxTxt().warn,'--warn'],[FX.bad,c('bad'),fxTxt().bad,'--bad'],['Desempenho médio',avg==null?'—':nf(avg*100,1)+'%','Atingimento das metas','--pri']].map(k=>`<div class="kpi" style="${k[3]?`--c:var(${k[3]})`:''}"><span>${k[0]}</span><b>${k[1]}</b><small>${k[2]}</small></div>`).join('');
+  $('#cnt').textContent=L.length;extras(all,y);
+  const vis=S.vis||(L.length>4?'list':'cards');$('#cards').className=vis==='list'?'list':'grid';
+  $('#vt').innerHTML=[['cards','Cards'],['list','Lista']].map(v=>`<button class="${v[0]===vis?'on':''}" onclick="S.vis='${v[0]}';render()">${v[1]}</button>`).join('');
+  const dc=(x,i,d)=>{const q=val(x,i.un),m=i.un==='num'&&d.meta?d.meta/2:d.meta;if(q==null||!m)return'pend';return faixa(razao(i,q,m))};
+  const card=i=>{const d=yr(i,y),s=stat(i,y),c=cons(i,d),r=s[2];
+   return`<article class="card ${s[0]}" tabindex="0" onclick="det('${i.id}')" onkeydown="if(event.key==='Enter')det('${i.id}')"><div class="in"><div class="row"><span class="chip" title="${esc(i.dim)}">${esc(i.dim||'Sem dimensão')}</span>${badge(s)}</div>
+   <div class="nm">${esc(i.nome)}</div>${flag(i,y)}
+   <div class="mc"><div class="row" style="align-items:baseline"><span class="big2">${fm(c,i)}</span><span class="mt">meta ${d.meta==null?'a definir':fm(d.meta,i)}</span></div><div class="pb"><i style="width:${Math.min((r||0)*100,100)}%"></i></div>
+   <div class="pc"><span><i class="dot ${dc(d.s1,i,d)}"></i>1º sem. ${fm(val(d.s1,i.un),i)}</span><span><i class="dot ${dc(d.s2,i,d)}"></i>2º sem. ${fm(val(d.s2,i.un),i)}</span></div></div></div></article>`};
+  const row=i=>{const d=yr(i,y),s=stat(i,y),r=s[2];
+   return`<div class="rw ${s[0]}" tabindex="0" role="button" onclick="det('${i.id}')" onkeydown="if(event.key==='Enter')det('${i.id}')"><div><b>${esc(i.nome)}</b><small>${esc(i.dim)}</small></div><span>${d.meta==null?'A definir':fm(d.meta,i)}</span><span class="rs">${fm(cons(i,d),i)}</span>
+   <div class="al"><div class="pb"><i style="width:${Math.min((r||0)*100,100)}%"></i></div><em>${r==null?'—':Math.round(r*100)+'%'}</em></div>
+   <span class="sd"><i class="dot ${dc(d.s1,i,d)}"></i>${fm(val(d.s1,i.un),i)}</span><span class="sd"><i class="dot ${dc(d.s2,i,d)}"></i>${fm(val(d.s2,i.un),i)}</span></div>`};
+  $('#cards').innerHTML=L.length?(vis==='list'?'<div class="lh"><span>Indicador</span><span>Meta '+y+'</span><span>Resultado</span><span>Alcance</span><span>1º sem.</span><span>2º sem.</span></div>'+L.map(row).join(''):L.map(card).join('')):'<p class="sub">Nenhum indicador encontrado.</p>'}
+ if(S.tab==='rel')relatorio();
+ if(S.tab==='grade'){
+  const pair=(i,k,d)=>i.un==='num'
+   ?`<div class="pair"><input type="number" step="any" min="0" placeholder="Qtd" value="${nv(d[k][0])}" onchange="ed('${i.id}','${k}',0,this.value)" aria-label="Quantidade realizada"></div><small>${fm(val(d[k],i.un),i)}</small>`
+   :`<div class="pair"><input type="number" step="any" min="0" value="${nv(d[k][0])}" onchange="ed('${i.id}','${k}',0,this.value)" aria-label="Número"><span>/</span><input type="number" step="any" min="0" value="${nv(d[k][1])}" onchange="ed('${i.id}','${k}',1,this.value)" aria-label="Total"></div><small>${fm(val(d[k],i.un),i)}</small>`;
+  $('#tb').innerHTML=L.map(i=>{const d=yr(i,y),pn=projNome(i.proj);return`<tr><td class="nm2">${esc(i.nome)}<small>Eixo ${i.eixo}${pn?' · '+esc(cut(pn,55)):''} · ${esc(i.dim)}${i.resp?' · 👤 '+esc(i.resp):''}</small></td>
+   <td class="cm"><input type="number" step="any" min="0" placeholder="A definir" value="${nv(d.meta)}" onchange="ed('${i.id}','meta',0,this.value)" aria-label="Meta"></td>
+   <td>${pair(i,'s1',d)}</td><td>${pair(i,'s2',d)}</td><td class="big">${fm(cons(i,d),i)}</td><td>${badge(stat(i,y))}</td>
+   <td style="white-space:nowrap"><button class="btn p" onclick="lanc('${i.id}')">Lançar</button> <button class="ic" onclick="edit('${i.id}')" aria-label="Editar indicador">✎</button></td></tr>`}).join('');
+  const tot=L.length*2,pre=L.reduce((t,i)=>{const d=yr(i,y);return t+(val(d.s1,i.un)!=null)+(val(d.s2,i.un)!=null)},0);
+  $('#pgT').innerHTML=`<b style="color:var(--tx)">${pre} de ${tot}</b> resultados semestrais preenchidos em ${y}`;$('#pgB').style.width=(tot?pre/tot*100:0)+'%'}
+}
+function flag(i,y){const d=yr(i,y);return stat(i,y)[0]==='bad'&&!d.acao?'<div class="note an">⚠ Abaixo da meta · sem plano de ação</div>':''}
+function extras(all,y){
+ const sts=all.map(i=>({i,s:stat(i,y)})),c=k=>sts.filter(x=>x.s[0]===k).length,ab=sts.filter(x=>x.s[2]!=null).sort((p,q)=>p.s[2]-q.s[2]);
+ const pend=all.filter(i=>{const d=yr(i,y);return val(d.s1,i.un)==null||val(d.s2,i.un)==null}),pr={};
+ pend.forEach(i=>{const k=i.resp||'Sem responsável';pr[k]=(pr[k]||0)+1});
+ const sp=all.filter(i=>stat(i,y)[0]==='bad'&&!yr(i,y).acao);
+ $('#resumo').innerHTML=all.length?`<b>Resumo ${y}:</b> ${c('ok')} de ${all.length} indicadores em bom desempenho, ${c('warn')} em atenção e ${c('bad')} abaixo da meta.${ab.length?` Menor atingimento: <b>${esc(cut(ab[0].i.nome,70))}</b> (${Math.round(ab[0].s[2]*100)}%).`:''}${sp.length?` <b>${sp.length}</b> abaixo da meta sem plano de ação.`:''}${pend.length?`<br><b>Pendências de lançamento:</b> ${Object.entries(pr).map(([k,n])=>esc(k)+' ('+n+')').join(' · ')}.`:''}`:'Nenhum indicador no filtro.';
+ const ev=e=>{const L=all.filter(i=>i.eixo===e.n),a=wa(L.map(i=>[stat(i,y)[2],pw(i)])),k=a==null?'pend':faixa(a),n=q=>L.filter(i=>stat(i,y)[0]===q).length;
+  return`<article class="card ${k}" tabindex="0" onclick="S.eixo=${e.n};S.proj='';S.dim='';render()" onkeydown="if(event.key==='Enter')this.click()"><div class="in"><div class="row"><span class="chip">Eixo ${e.n}</span><span class="badge ${k}">${a==null?'Sem resultado':nf(a*100,1)+'%'}</span></div><div class="nm">${esc(e.nome)}</div><div class="pb"><i style="width:${Math.min((a||0)*100,100)}%"></i></div><div class="mt">${L.length} indicadores · ${n('ok')} bons · ${n('warn')} em atenção · ${n('bad')} abaixo</div></div></article>`};
+ $('#eixosCards').innerHTML=!S.eixo&&D.eixos.length>1?`<h3 style="margin-bottom:12px">Visão por eixo</h3><div class="grid" style="margin-bottom:26px">${D.eixos.map(ev).join('')}</div>`:'';
+ const ps=D.projs.filter(p=>all.some(i=>i.proj===p.id));
+ $('#mapa').innerHTML=ps.length?`<h3 style="margin-bottom:12px">Mapa de calor · projetos e indicadores</h3><div class="list" style="padding:6px 18px;margin-bottom:26px">${D.eixos.map(e=>{const pe=ps.filter(p=>p.eixo===e.n);return pe.length?`<div style="margin:12px 0 4px;font-size:11.5px;font-weight:700;color:var(--pri)">Eixo ${e.n} · ${esc(cut(e.nome,80))}</div>${pe.map(p=>`<div class="row" style="padding:7px 0;border-top:1px solid var(--ln)"><span class="cl2" style="flex:1" title="${esc(p.nome)}">${esc(p.nome)}</span><span style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:45%">${all.filter(i=>i.proj===p.id).map(i=>`<i class="hm ${stat(i,y)[0]}" title="${esc(i.id+' · '+i.nome)}" onclick="det('${i.id}')"></i>`).join('')}</span></div>`).join('')}`:''}).join('')}</div>`:''}
+function evo(i){const W=ANOS.map(a=>{const d=yr(i,a);return{a,m:d.meta,r:cons(i,d)}}),mx=Math.max(...W.flatMap(x=>[x.m||0,x.r||0]),1),bw=22,h=90,bh=v=>v?Math.max(v/mx*h,2):0;
+ return`<svg viewBox="0 0 ${W.length*100} ${h+34}" style="width:100%;max-height:150px" role="img" aria-label="Meta e resultado por ano">${W.map((x,k)=>{const X=k*100+14;return`<rect x="${X}" y="${h-bh(x.m)+6}" width="${bw}" height="${bh(x.m)}" rx="4" fill="var(--ln)"/><rect x="${X+bw+6}" y="${h-bh(x.r)+6}" width="${bw}" height="${bh(x.r)}" rx="4" fill="var(--pri)"/><text x="${X+bw+3}" y="${h+22}" text-anchor="middle" font-size="11" fill="var(--mu)">${x.a}</text>`}).join('')}</svg><div class="mt" style="margin:0 0 14px;display:flex;gap:14px"><span>▇ Meta</span><span style="color:var(--pri)">▇ Resultado</span></div>`}
+function ed(id,k,j,v){const i=D.inds.find(x=>x.id===id),d=yr(i,S.ano);if(k==='meta')d.meta=num(v);else d[k][j]=num(v);d.upd=hoje();save();render()}
+
+function det(id){const i=D.inds.find(x=>x.id===id),y=S.ano,d=yr(i,y),s=stat(i,y),c=cons(i,d),A=D.cfg.verm/100,pn=projNome(i.proj);
+ const dc=x=>{const q=val(x,i.un),m=i.un==='num'&&d.meta?d.meta/2:d.meta;if(q==null||!m)return'pend';return faixa(razao(i,q,m))};
+ const sm=(t,x)=>`<div class="sem"><div>${t}<i class="dot ${dc(x)}"></i></div><b>${fm(val(x,i.un),i)}</b><small>${x[0]!=null?(i.un==='num'?'Realizado: '+x[0]:x[0]+' / '+x[1]):'Não preenchido'}</small></div>`;
+ abrir(`<div class="mh"><div><small>Eixo ${i.eixo} · ${esc(i.dim)}</small><h3>${esc(i.nome)}</h3>${pn?`<div style="font-size:11.5px;color:#b8e3e6;margin-top:6px;line-height:1.4"><b>Projeto:</b> ${esc(pn)}</div>`:''}</div><button onclick="fechar()" aria-label="Fechar">×</button></div><div class="mb">
+ <div class="row" style="margin-bottom:14px"><div><div class="mt">Meta ${y}</div><div class="big2" style="color:var(--tx)">${d.meta==null?'A definir':fm(d.meta,i)}</div></div><div style="text-align:center"><div class="mt">Resultado</div><div class="big2 ${s[0]}">${fm(c,i)}</div></div>${badge(s)}</div>
+ <div class="sems" style="margin-bottom:14px">${sm('1º semestre',d.s1)}${sm('2º semestre',d.s2)}</div>
+ ${evo(i)}<div class="traj" style="margin-bottom:16px">${ANOS.map(a=>`<span class="${a===y?'on':''}">${a}<b>${fm(yr(i,a).meta,i)}</b></span>`).join('')}</div>
+ ${i.just?`<p style="color:var(--mu);line-height:1.6;margin-bottom:14px">${esc(i.just)}</p>`:''}${i.formula?`<div class="note" style="margin-bottom:12px"><b>Fórmula:</b> ${esc(i.formula)}</div>`:''}${d.obs?`<div class="note an"><b>Análise (${y}):</b> ${esc(d.obs)}</div>`:''}${d.acao?`<div class="note" style="margin-top:10px"><b>Plano de ação:</b> ${esc(d.acao)}</div>`:flag(i,y)}<div class="note" style="margin-top:10px"><b>Responsável:</b> ${esc(i.resp||'não definido')} · <b>Sentido:</b> ${i.sent==='min'?'quanto menor, melhor':'quanto maior, melhor'} · <b>Peso:</b> ${pw(i)} · <b>Última atualização:</b> ${d.upd?d.upd.split('-').reverse().join('/'):'—'}</div></div>
+ <div class="mf"><button class="btn" onclick="edit('${id}')">✎ Editar ficha</button><button class="btn p" onclick="lanc('${id}')">Preencher semestres ${y}</button></div>`)}
+/* calculadora semestral */
+function lanc(id){const i=D.inds.find(x=>x.id===id),y=S.ano,d=yr(i,y);
+ const sem=(k,t)=>`<div class="blk"><h4>${t}</h4><div class="fld"><label>${esc(i.a||'Valor realizado')}</label><input id="${k}n" type="number" step="any" min="0" value="${nv(d[k][0])}" oninput="prev()"></div>${i.un==='num'?'':`<div class="fld"><label>${esc(i.b)}</label><input id="${k}d" type="number" step="any" min="0" value="${nv(d[k][1])}" oninput="prev()"></div>`}<div class="rc"><span>Resultado calculado</span><b id="${k}r">—</b></div></div>`;
+ const uLbl=i.un==='%'?'%':i.un==='num'?'quantidade':'nota';
+ abrir(`<div class="mh"><div><small>Eixo ${i.eixo} · ${y}</small><h3>Metas e resultados semestrais</h3></div><button onclick="fechar()" aria-label="Fechar">×</button></div><div class="mb"><h4 style="margin-bottom:14px;font-size:15px">${esc(i.nome)}</h4>
+ <div class="blk m"><div class="r2"><div class="fld" style="margin:0"><label>Ano de referência</label><select id="ly" onchange="S.ano=+this.value;lanc('${id}')">${ANOS.map(a=>`<option ${a===y?'selected':''}>${a}</option>`).join('')}</select></div><div class="fld" style="margin:0"><label>Meta anual (${uLbl})</label><input id="lm" type="number" step="any" min="0" placeholder="A definir" value="${nv(d.meta)}" oninput="prev()"></div></div></div>
+ <div class="r2">${sem('s1','1º semestre · jan–jun')}${sem('s2','2º semestre · jul–dez')}</div>
+ <div class="fld"><label>Análise do período</label><textarea id="lo" rows="3" placeholder="Comente o resultado deste ano">${esc(d.obs)}</textarea></div><div class="fld"><label>Plano de ação (se estiver abaixo da meta)</label><textarea id="la" rows="2" placeholder="O que será feito para atingir a meta?">${esc(d.acao)}</textarea></div></div>
+ <div class="mf"><span>Consolidado: <b id="lc">—</b></span><span style="display:flex;gap:10px"><button class="btn" onclick="fechar()">Cancelar</button><button class="btn p" onclick="salvarLanc('${id}')">Salvar valores</button></span></div>`);_pid=id;prev()}
+let _pid;const lerL=()=>{const i=D.inds.find(x=>x.id===_pid),s1n=num($('#s1n').value),s2n=num($('#s2n').value);return{meta:num($('#lm').value),s1:i.un==='num'?[s1n,null]:[s1n,num($('#s1d').value)],s2:i.un==='num'?[s2n,null]:[s2n,num($('#s2d').value)],obs:$('#lo').value.trim(),acao:$('#la').value.trim()}};
+function prev(){const i=D.inds.find(x=>x.id===_pid),d=lerL();$('#s1r').textContent=fm(val(d.s1,i.un),i);$('#s2r').textContent=fm(val(d.s2,i.un),i);$('#lc').textContent=fm(cons(i,d),i)}
+function salvarLanc(id){const i=D.inds.find(x=>x.id===id),d=lerL();
+ if(i.un!=='num'&&[d.s1,d.s2].some(s=>(s[0]==null)!==(s[1]==null)||(s[1]!=null&&s[1]<=0)))return toast('Preencha os dois campos do semestre (total maior que zero).');
+ d.upd=hoje();i.anos[S.ano]=d;save();fechar();render();toast(stat(i,S.ano)[0]==='bad'&&!d.acao?'Valores salvos. Abaixo da meta: registre um plano de ação.':'Valores salvos.')}
+/* ficha do indicador (novo / editar / excluir) */
+function edit(id){const i=id?D.inds.find(x=>x.id===id):null,e=i?D.eixos.find(x=>x.n===i.eixo):D.eixos.find(x=>x.n===S.eixo)||D.eixos[D.eixos.length-1]||{n:1,nome:'',obj:''};
+ const v=(k,f='')=>esc(i?i[k]:f),pj=(i&&D.projs.find(p=>p.id===i.proj))||D.projs.find(p=>p.id===S.proj)||{id:'',nome:''};
+ abrir(`<div class="mh"><div><small>Estrutura estratégica · 4 elementos</small><h3>${i?'Editar indicador':'Novo indicador'}</h3></div><button onclick="fechar()" aria-label="Fechar">×</button></div><div class="mb">
+ <div class="blk"><h4>1. Eixo estratégico, 2. Objetivo e Projeto estratégico</h4><div class="r2" style="grid-template-columns:110px 1fr"><div class="fld"><label>Nº do eixo</label><input id="fN" type="number" min="1" value="${e.n}" oninput="ePre()"></div><div class="fld"><label>Nome do eixo</label><input id="fE" value="${esc(e.nome)}"></div></div><div class="fld"><label>Objetivo estratégico (o que queremos alcançar?)</label><textarea id="fO" rows="2">${esc(e.obj)}</textarea></div>
+ <div class="fld" style="margin:0"><label>Projeto estratégico</label><select id="fPS" onchange="if(this.value!=='__new__')$('#fPN').value=this.value;else{$('#fPN').value='';$('#fPN').focus()}"><option value="__new__">＋ Cadastrar novo projeto ou editar abaixo…</option>${D.projs.map(p=>`<option value="${esc(p.nome)}" ${p.id===pj.id?'selected':''}>${esc(cut(p.nome,78))}</option>`).join('')}</select><textarea id="fPN" rows="2" placeholder="Nome completo do projeto estratégico">${esc(pj.nome)}</textarea></div></div>
+ <div class="blk"><h4>3. Indicador (como saberemos se estamos avançando?)</h4><div class="fld"><label>Nome do indicador</label><input id="fI" value="${v('nome')}"></div>
+ <div class="r2"><div class="fld"><label>Dimensão</label><input id="fD" value="${v('dim')}" placeholder="Ex.: Pessoas e Cultura Organizacional"></div><div class="fld"><label>Tipo de cálculo</label><select id="fU"><option value="%" ${!i||i.un==='%'?'selected':''}>Percentual (%) — numerador / total</option><option value="nota" ${i&&i.un==='nota'?'selected':''}>Média / nota — soma / total</option><option value="num" ${i&&i.un==='num'?'selected':''}>Número absoluto — somatório</option></select></div></div>
+ <div class="r2"><div class="fld"><label>Rótulo do numerador / quantidade</label><input id="fA" value="${v('a')}"></div><div class="fld"><label>Rótulo do denominador (se aplicável)</label><input id="fB" value="${v('b')}"></div></div>
+ <div class="r3"><div class="fld"><label>Sentido da meta</label><select id="fS"><option value="max" ${!i||i.sent!=='min'?'selected':''}>Quanto maior, melhor</option><option value="min" ${i&&i.sent==='min'?'selected':''}>Quanto menor, melhor</option></select></div><div class="fld"><label>Peso na média</label><input id="fW" type="number" min="0.1" step="any" value="${i?pw(i):1}"></div><div class="fld"><label>Responsável</label><input id="fR" value="${v('resp')}" placeholder="Nome ou setor"></div></div>
+ <div class="fld"><label>Fórmula de cálculo</label><input id="fF" value="${v('formula')}"></div><div class="fld" style="margin:0"><label>Justificativa (o que avalia)</label><textarea id="fJ" rows="3">${v('just')}</textarea></div></div>
+ <div class="blk m"><div class="r2" style="align-items:center"><div><h4 style="margin:0">4. Meta anual padrão (2026–2029)</h4><small style="color:var(--mu)">Preenche os anos que ainda estão sem meta.</small></div><input id="fM" type="number" step="any" min="0" value="${i?nv(yr(i,2026).meta):''}"></div></div></div>
+ <div class="mf">${i?`<button class="btn d" onclick="excluir('${id}')">Excluir indicador</button>`:'<span></span>'}<span style="display:flex;gap:10px"><button class="btn" onclick="fechar()">Cancelar</button><button class="btn g" onclick="salvarEdit(${i?`'${id}'`:'null'})">Salvar indicador</button></span></div>`)}
+function ePre(){const e=D.eixos.find(x=>x.n===+$('#fN').value);if(e){$('#fE').value=e.nome;$('#fO').value=e.obj}}
+const ensureProj=(eixoN,nomeRaw)=>{const pnm=cleanProjNome(nomeRaw);if(!pnm)return'';let q=D.projs.find(x=>nk(x.nome)===nk(pnm));if(!q){let k=D.projs.length+1,id;do{id='p'+k++}while(D.projs.some(x=>x.id===id));q={id,eixo:eixoN,nome:pnm};D.projs.push(q)}else{q.eixo=eixoN;q.nome=pnm}return q.id};
+function salvarEdit(id){const n=+$('#fN').value,en=$('#fE').value.trim(),nm=$('#fI').value.trim(),u=$('#fU').value,a=$('#fA').value.trim(),b=$('#fB').value.trim()||(u==='num'?'Referência':'');
+ if(!n||!en||!nm||!a||(!b&&u!=='num'))return toast('Preencha eixo, indicador e os rótulos.');
+ let e=D.eixos.find(x=>x.n===n);if(!e){e={n,nome:en,obj:''};D.eixos.push(e);D.eixos.sort((x,y)=>x.n-y.n)}e.nome=en;e.obj=$('#fO').value.trim();
+ let i=id?D.inds.find(x=>x.id===id):null;if(!i){i={id:n+'.'+Date.now().toString(36),anos:{}};D.inds.push(i)}
+ const pid=ensureProj(n,$('#fPN').value);i.proj=pid;
+ Object.assign(i,{eixo:n,dim:$('#fD').value.trim(),nome:nm,un:u,a,b,formula:$('#fF').value.trim(),just:$('#fJ').value.trim(),sent:$('#fS').value,peso:+$('#fW').value>0?+$('#fW').value:1,resp:$('#fR').value.trim()});
+ const m=num($('#fM').value);if(m!=null)ANOS.forEach(y=>{const d=yr(i,y);if(d.meta==null)d.meta=m});
+ S.eixo=S.eixo?n:0;S.proj=S.proj?pid:'';save();fechar();render();toast('Indicador salvo.')}
+function excluir(id){if(!confirm('Excluir este indicador e todos os seus resultados?'))return;D.inds=D.inds.filter(x=>x.id!==id);save();fechar();render();toast('Indicador excluído.')}
+/* configurações */
+function cfgPreencher(){$('#cVm').value=D.cfg.verm;$('#cVd').value=D.cfg.verde;$('#cAm').value=D.cfg.verde-1;cfgPrev()}
+function cfgSync(w){if(w==='am')$('#cVd').value=(+$('#cAm').value||0)+1;else $('#cAm').value=(+$('#cVd').value||1)-1;cfgPrev()}
+function cfgPrev(){const vm=+$('#cVm').value||0,vd=+$('#cVd').value||0,a=Math.max(0,Math.min(100,vm)),b=Math.max(a,Math.min(100,vd));$('#cAmDe').textContent=vm||'—';$('#cFxBar').innerHTML=`<i class="bad" style="width:${a}%"></i><i class="warn" style="width:${b-a}%"></i><i class="ok" style="width:${100-b}%"></i>`}
+function cfgSalvar(){const vm=+$('#cVm').value,vd=+$('#cVd').value;
+ if(!Number.isInteger(vm)||vm<1||vm>98)return toast('Vermelho: informe um número inteiro entre 1 e 98.');
+ if(!Number.isInteger(vd)||vd<=vm||vd>100)return toast('Verde: informe um número inteiro maior que o limite do vermelho (até 100).');
+ D.cfg={titulo:$('#cTit').value.trim()||CFG0.titulo,inst:$('#cInst').value.trim()||CFG0.inst,verm:vm,verde:vd,tema:$('#cTh').value};save();render();toast('Configurações salvas.')}
+function resetDados(){if(!confirm('Apagar todos os dados e voltar ao piloto original?'))return;D=SEED();S.eixo=0;S.proj='';S.dim='';save();go('dash');toast('Dados do piloto restaurados.')}
+/* Excel */
+const COLS=['Eixo_N','Eixo','Objetivo','Projeto','ID','Dimensao','Indicador','Tipo','Rotulo_A','Rotulo_B','Formula','Justificativa','Ano','Meta','S1_A','S1_B','S2_A','S2_B','Analise','Sentido','Peso','Responsavel','Plano_acao'];
+function linhas(vazio){const r=[];D.inds.forEach(i=>{const e=D.eixos.find(x=>x.n===i.eixo)||{};ANOS.forEach(y=>{const d=vazio?mk(null):yr(i,y);r.push([i.eixo,e.nome,e.obj,projNome(i.proj),i.id,i.dim,i.nome,i.un==='%'?'Percentual':i.un==='num'?'Número':'Média',i.a,i.b,i.formula,i.just,y,nv(d.meta),nv(d.s1[0]),nv(d.s1[1]),nv(d.s2[0]),nv(d.s2[1]),vazio?'':d.obs,i.sent==='min'?'Menor':'Maior',pw(i),i.resp||'',vazio?'':d.acao||''])})});return r}
+function baixar(rows,nome,head){if(window.XLSX){const ws=XLSX.utils.aoa_to_sheet([head,...rows]);ws['!cols']=head.map(h=>({wch:Math.min(46,Math.max(10,h.length+4))}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Indicadores');XLSX.writeFile(wb,nome+'.xlsx')}
+ else{const csv=[head,...rows].map(r=>r.map(c=>'"'+String(c??'').replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=nome+'.csv';a.click()}toast('Arquivo gerado.')}
+const expTudo=()=>baixar(linhas(false),'indicadores_fiocruz_minas',COLS),expModelo=()=>baixar(linhas(true),'modelo_em_branco',COLS);
+function expGrade(){const y=S.ano;baixar(filt().map(i=>{const d=yr(i,y);return[`Eixo ${i.eixo}`,projNome(i.proj),i.dim,i.nome,nv(d.meta),nv(val(d.s1,i.un)),nv(val(d.s2,i.un)),nv(cons(i,d)),stat(i,y)[1]]}),'grade_semestral_'+y,['Eixo','Projeto','Dimensão','Indicador','Meta '+y,'1º semestre','2º semestre','Consolidado','Status'])}
+let PEND=null;const fi=$('#fi'),drop=$('#drop');
+fi.onchange=()=>fi.files[0]&&lerArq(fi.files[0]);drop.ondragover=e=>{e.preventDefault();drop.classList.add('hv')};drop.ondragleave=()=>drop.classList.remove('hv');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hv');e.dataTransfer.files[0]&&lerArq(e.dataTransfer.files[0])};
+function lerArq(f){if(!window.XLSX)return toast('Biblioteca de planilhas indisponível (sem internet).');if(f.size>10485760)return toast('Arquivo acima de 10 MB.');
+ const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array'});(()=>{const nm=wb.SheetNames.map(x=>x.trim().toLowerCase());return nm.includes('projeto')&&nm.includes('indicadores')?planilhaProjeto(wb):analisar(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}))})()}catch(x){toast('Não foi possível ler a planilha.')}fi.value=''};r.readAsArrayBuffer(f)}
+function analisar(rows){const ok=[],err=[];
+ rows.forEach((r,k)=>{const L=k+2,y=+r.Ano,n=+r.Eixo_N;if(!r.ID||!r.Indicador||!n)return err.push(`Linha ${L}: informe Eixo_N, ID e Indicador.`);if(!ANOS.includes(y))return err.push(`Linha ${L}: o ano deve estar entre 2026 e 2029.`);
+  if(!r.Rotulo_A&&!D.inds.find(i=>i.id===String(r.ID)))return err.push(`Linha ${L}: indicador novo precisa de Rotulo_A.`);ok.push({...r,ID:String(r.ID).replace(/[^\w.\-]/g,'_'),Ano:y,Eixo_N:n})});
+ const nI=new Set(ok.filter(r=>!D.inds.find(i=>i.id===r.ID)).map(r=>r.ID)).size,nE=new Set(ok.filter(r=>!D.eixos.find(e=>e.n===r.Eixo_N)).map(r=>r.Eixo_N)).size;PEND=ok;
+ abrir(`<div class="mh"><div><small>Prévia da importação</small><h3>Confirme as alterações</h3></div><button onclick="fechar()" aria-label="Fechar">×</button></div><div class="mb"><div class="kpis" style="grid-template-columns:repeat(4,1fr);margin:0">${[['Linhas válidas',ok.length],['Novos eixos',nE],['Novos indicadores',nI],['Com erro',err.length]].map(k=>`<div class="kpi"><span>${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div>${err.length?`<div class="err">${err.slice(0,6).map(esc).join('<br>')}${err.length>6?'<br>…':''}<br>Linhas com erro serão ignoradas.</div>`:''}</div>
+ <div class="mf"><span></span><span style="display:flex;gap:10px"><button class="btn" onclick="fechar()">Cancelar</button><button class="btn p" ${ok.length?'':'disabled'} onclick="aplicar()">Confirmar importação</button></span></div>`)}
+function aplicar(){PEND.forEach(r=>{let e=D.eixos.find(x=>x.n===r.Eixo_N);if(!e){e={n:r.Eixo_N,nome:'',obj:''};D.eixos.push(e)}if(r.Eixo)e.nome=String(r.Eixo);if(r.Objetivo)e.obj=String(r.Objetivo);
+ const pid=r.Projeto?ensureProj(r.Eixo_N,r.Projeto):(r.Projeto_ID?ensureProj(r.Eixo_N,r.Projeto_ID):'');
+ let i=D.inds.find(x=>x.id===r.ID);if(!i){i={id:r.ID,dim:'',nome:'',un:'%',a:'',b:'',formula:'',just:'',anos:{}};D.inds.push(i)}
+ i.eixo=r.Eixo_N;i.nome=String(r.Indicador);if(pid)i.proj=pid;if(r.Sentido)i.sent=String(r.Sentido).toLowerCase().startsWith('men')?'min':'max';if(r.Peso>0)i.peso=+r.Peso;if(r.Responsavel)i.resp=String(r.Responsavel);
+ if(r.Tipo){const tp=String(r.Tipo).toLowerCase();i.un=tp.startsWith('m')?'nota':tp.startsWith('n')?'num':'%'}
+ if(r.Dimensao)i.dim=String(r.Dimensao);if(r.Rotulo_A)i.a=String(r.Rotulo_A);if(r.Rotulo_B)i.b=String(r.Rotulo_B);if(r.Formula)i.formula=String(r.Formula);if(r.Justificativa)i.just=String(r.Justificativa);
+ i.anos[r.Ano]=Object.assign(i.anos[r.Ano]||{},{meta:num(r.Meta),s1:[num(r.S1_A),num(r.S1_B)],s2:[num(r.S2_A),num(r.S2_B)],obs:String(r.Analise||''),...(r.Plano_acao?{acao:String(r.Plano_acao)}:{}),upd:hoje()})});
+ D.eixos.sort((a,b)=>a.n-b.n);D.eixos.forEach(e=>{if(!e.nome)e.nome='Eixo '+e.n});save();PEND=null;fechar();go('dash');toast('Planilha importada com sucesso.')}
+/* planilha de projeto: abas "projeto" (eixo, objetivo, projeto) e "indicadores" */
+let PEST=null;
+const t_=v=>String(v??'').replace(/[\u202f\u00a0\s]+/g,' ').trim().normalize('NFC'),nk=v=>t_(v).replace(/;+$/,'').trim().toLowerCase(),sa=v=>nk(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function planilhaProjeto(wb){
+ const rd=n=>XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames.find(x=>x.trim().toLowerCase()===n)],{header:1,defval:''}),P=rd('projeto'),I=rd('indicadores'),E=[],PJ=[];let e=null;
+ P.forEach((r,k)=>{const b=t_(r[1]),c=t_(r[2]),m=b.match(/^(\d+)\s*[º°o]?\s*EIXO/i),q=/Projeto\s*estrat[eé]gico/i.test(b);
+  if(m){e={n:+m[1],nome:t_((P[k+1]||[])[1]),obj:''};E.push(e)}else if(e&&/^Objetivo/i.test(b)&&!e.obj)e.obj=c;else if(e&&q&&c){const pnm=cleanProjNome(c),ex=D.projs.find(x=>nk(x.nome)===nk(pnm))||PJ.find(x=>nk(x.nome)===nk(pnm));PJ.push({id:ex?ex.id:'p_new_'+(PJ.length+1),eixo:e.n,nome:pnm})}});
+ if(!E.length)return toast('Não encontrei o eixo na aba “projeto” (coluna B).');
+ const hi=I.findIndex(r=>r.some(c=>sa(c)==='indicador')),H=(I[hi]||[]).map(sa),ix=n=>H.findIndex(h=>h.startsWith(n)),cD=ix('dimens'),cI=ix('indicador'),cJ=ix('justif'),cF=ix('formula'),cP=ix('projeto');
+ if(hi<0)return toast('Não encontrei o cabeçalho “Indicador” na aba “indicadores”.');
+ const IN=I.slice(hi+1).filter(r=>t_(r[cI])).map(r=>{const rawP=cP>=0?cleanProjNome(t_(r[cP])):'',pr=(rawP&&PJ.find(x=>nk(x.nome)===nk(rawP)))||PJ[0];return{nome:t_(r[cI]).replace(/;+$/,'').trim(),dim:cD>=0?t_(r[cD]):'',just:cJ>=0?t_(r[cJ]):'',formula:cF>=0?t_(r[cF]):'',projNome:pr?pr.nome:rawP,eixo:pr?pr.eixo:E[0].n}});
+ PEST={E,PJ,IN};const up=IN.filter(n=>D.inds.find(x=>nk(x.nome)===nk(n.nome))).length;
+ abrir(`<div class="mh"><div><small>Prévia da importação</small><h3>Estrutura da planilha de projeto</h3></div><button onclick="fechar()" aria-label="Fechar">×</button></div><div class="mb"><div class="kpis" style="grid-template-columns:repeat(4,1fr);margin:0">${[['Eixos',E.length],['Projetos',PJ.length],['Indicadores novos',IN.length-up],['Indicadores atualizados',up]].map(k=>`<div class="kpi"><span>${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div><p style="color:var(--mu);margin-top:14px;line-height:1.6">${E.map(x=>'<b>Eixo '+x.n+':</b> '+esc(x.nome)).join('<br>')}${PJ.length?'<br>'+PJ.map(p=>'<b>Projeto:</b> '+esc(p.nome)).join('<br>'):''}<br>Metas e resultados já lançados são preservados.</p></div>
+ <div class="mf"><span></span><span style="display:flex;gap:10px"><button class="btn" onclick="fechar()">Cancelar</button><button class="btn p" onclick="aplicarEstr()">Confirmar importação</button></span></div>`)}
+function aplicarEstr(){const{E,PJ,IN}=PEST;
+ E.forEach(e=>{const x=D.eixos.find(a=>a.n===e.n);if(x){if(e.nome)x.nome=e.nome;if(e.obj)x.obj=e.obj}else D.eixos.push(e)});D.eixos.sort((a,b)=>a.n-b.n);
+ PJ.forEach(p=>ensureProj(p.eixo,p.nome));
+ IN.forEach(n=>{const pid=ensureProj(n.eixo,n.projNome);let i=D.inds.find(x=>nk(x.nome)===nk(n.nome));if(!i){let k=1,id;do{id=(pid||'ind')+'.'+k++}while(D.inds.some(x=>x.id===id));
+  const isNum=/^n[úu]mero\b|^quantidade\b|^total\b/i.test(n.nome)||(/^som[aá]t[oó]rio/i.test(n.formula)&&!/100|\//.test(n.formula));
+  const pc=!isNum&&(/^%|^percentual|^taxa/i.test(n.nome)||/100/.test(n.formula));
+  const un=isNum?'num':pc?'%':'nota';
+  i={id,dim:'',nome:n.nome,un,a:isNum?'Nº de ações realizadas':pc?'Numerador':'Soma das notas',b:isNum?'Referência':pc?'Denominador':'Nº de respondentes',formula:'',just:'',anos:{}};D.inds.push(i)}
+  i.eixo=n.eixo;i.proj=pid;if(n.dim)i.dim=n.dim;if(n.just)i.just=n.just;if(n.formula)i.formula=n.formula});
+ save();PEST=null;fechar();S.eixo=0;S.proj='';S.dim='';go('dash');toast('Estrutura importada. Metas e resultados preservados.')}
+/* relatório */
+let REL=[],RELD={eixo:[],proj:[],dim:[],ind:[]};
+function relatorio(){const y=S.ano,A=D.cfg.verm/100;REL=[];RELD={eixo:[],proj:[],dim:[],ind:[]};
+ const rat=(i,k)=>{const d=yr(i,y);if(!(d.meta>0))return null;const v=k==='a'?cons(i,d):val(d[k],i.un),m=k!=='a'?(i.un==='num'?d.meta/2:d.meta):metaEf(i,d);return razao(i,v,m)},
+ avg=(L,k)=>wa(L.map(i=>[rat(i,k),pw(i)])),
+ P=r=>r==null?'—':`<span class="rp ${faixa(r)}">${nf(r*100,1)}%</span>`,n1=r=>r==null?'':Math.round(r*1000)/10;
+ const row=(nv_,nome,sub,L)=>{const st=L.map(i=>stat(i,y)[0]),c=k=>st.filter(x=>x===k).length,a=[avg(L,'s1'),avg(L,'s2'),avg(L,'a')];
+  REL.push([nv_,nome,L.length,...a.map(n1),c('ok'),c('warn'),c('bad')]);RELD[({Eixo:'eixo',Projeto:'proj','Dimensão':'dim'})[nv_]].push({nome,sub,n:L.length,s1:a[0],s2:a[1],a:a[2],ok:c('ok'),warn:c('warn'),bad:c('bad')});
+  return`<tr><td class="nm2"><span class="cl2" title="${esc(nome)}">${esc(nome)}</span>${sub?`<small>${esc(sub)}</small>`:''}</td><td>${L.length}</td><td>${P(a[0])}</td><td>${P(a[1])}</td><td class="big">${P(a[2])}</td><td>${c('ok')}</td><td>${c('warn')}</td><td>${c('bad')}</td></tr>`},
+ tb=(t,h,rows)=>`<h3 style="margin:26px 0 12px">${t}</h3><div class="tw rep"><table><thead><tr><th>${h}</th><th>Indicadores</th><th>1º sem.</th><th>2º sem.</th><th>Anual</th><th>Bom desempenho</th><th>Em atenção</th><th>Abaixo</th></tr></thead><tbody>${rows||'<tr><td colspan="8">Sem dados para o filtro selecionado.</td></tr>'}</tbody></table></div>`,
+ all=base(),st=all.map(i=>stat(i,y)[0]),dims=[...new Set(all.map(i=>i.dim).filter(Boolean))],pc=r=>r==null?'—':nf(r*100,1)+'%';
+ const eixosRel=D.eixos.filter(e=>!S.eixo||e.n===S.eixo);
+ const projsRel=D.projs.filter(p=>(!S.eixo||p.eixo===S.eixo)&&(!S.proj||p.id===S.proj)&&(!S.dim||all.some(i=>i.proj===p.id)));
+ $('#rk').innerHTML=[['Indicadores',all.length,'Ciclo '+y,''],['1º semestre',pc(avg(all,'s1')),'Jan–jun','--pri'],['2º semestre',pc(avg(all,'s2')),'Jul–dez','--pri'],['Desempenho anual',pc(avg(all,'a')),'Consolidado do ano','--ok'],[FX.ok,st.filter(x=>x==='ok').length+' de '+all.length,fxTxt().ok,'--ok']].map(k=>`<div class="kpi" style="${k[3]?`--c:var(${k[3]})`:''}"><span>${k[0]}</span><b>${k[1]}</b><small>${k[2]}</small></div>`).join('');
+ RELD.res={tot:all.length,ok:st.filter(x=>x==='ok').length,warn:st.filter(x=>x==='warn').length,bad:st.filter(x=>x==='bad').length,s1:avg(all,'s1'),s2:avg(all,'s2'),a:avg(all,'a')};
+ $('#leg').innerHTML=['ok','warn','bad'].map(k=>`<span class="${k}"><i class="dot"></i>${FX[k]} · ${fxTxt()[k]}</span>`).join('');
+ const det=all.map(i=>{const d=yr(i,y),s=stat(i,y),pn=projNome(i.proj);RELD.ind.push({nome:i.nome,eixo:'Eixo '+i.eixo,proj:pn,dim:i.dim||'',un:i.un,meta:d.meta,s1:val(d.s1,i.un),s2:val(d.s2,i.un),a:cons(i,d),r:s[2],st:s[0],stx:s[1]});return`<tr><td class="nm2"><span class="cl2" title="${esc(i.nome)}">${esc(i.nome)}</span><small>Eixo ${i.eixo}${pn?' · '+esc(cut(pn,60)):''} · ${esc(i.dim)}</small></td><td>${d.meta==null?'A definir':fm(d.meta,i)}</td><td>${fm(val(d.s1,i.un),i)}</td><td>${fm(val(d.s2,i.un),i)}</td><td class="big">${fm(cons(i,d),i)}</td><td>${P(s[2])}</td><td>${badge(s)}</td></tr>`}).join('');
+ $('#rb').innerHTML=tb('Desempenho por eixo','Eixo',eixosRel.map(e=>row('Eixo',`Eixo ${e.n} · ${e.nome}`,'',all.filter(i=>i.eixo===e.n))).join(''))
+  +tb('Desempenho por projeto estratégico','Projeto',projsRel.map(p=>row('Projeto',p.nome,'Eixo '+p.eixo,all.filter(i=>i.proj===p.id))).join(''))
+  +tb('Desempenho por dimensão','Dimensão',dims.map(d=>row('Dimensão',d,'',all.filter(i=>i.dim===d))).join(''))
+  +`<h3 style="margin:26px 0 12px">Indicadores em ${y} (${all.length})</h3><div class="tw rep"><table><thead><tr><th>Indicador</th><th>Meta</th><th>1º sem.</th><th>2º sem.</th><th>Anual</th><th>% da meta</th><th>Status</th></tr></thead><tbody>${det||'<tr><td colspan="7">Nenhum indicador encontrado para o filtro selecionado.</td></tr>'}</tbody></table></div>`}
+async function expRel(){
+ const y=S.ano,cor=$('#rCor').checked;
+ if(!window.ExcelJS)return baixar(REL,'relatorio_desempenho_'+y,['Nível','Grupo','Indicadores','1º sem. (%)','2º sem. (%)','Anual (%)','Bom desempenho','Em atenção','Abaixo da meta']);
+ try{
+ const wb=new ExcelJS.Workbook();wb.creator=D.cfg.inst;wb.created=new Date();
+ const PAL={ok:{bg:'FFD3F0E3',fg:'FF0B6B4A'},warn:{bg:'FFFDEBC0',fg:'FF8A5A00'},bad:{bg:'FFF9D3D8',fg:'FF9E1B2F'}},
+  th={style:'thin',color:{argb:'FFD5DEE0'}},bd={top:th,left:th,bottom:th,right:th},
+  paint=(c,k)=>{if(cor&&PAL[k]){c.fill={type:'pattern',pattern:'solid',fgColor:{argb:PAL[k].bg}};c.font={bold:true,color:{argb:PAL[k].fg}}}},
+  pctK=(c,v)=>{if(typeof v==='number')paint(c,faixa(v))},
+  HF={type:'pattern',pattern:'solid',fgColor:{argb:'FF0E5A63'}},
+  UN={'%':'Percentual',num:'Número',nota:'Nota (1–5)'},FM={'%':'0.0"%"',num:'0',nota:'0.00'};
+ const folha=(nome,cols,rows,pintar)=>{
+  const ws=wb.addWorksheet(nome,{views:[{state:'frozen',ySplit:1}],properties:{tabColor:{argb:'FF0E5A63'}}});
+  ws.columns=cols.map(c=>({header:c.h,width:c.w}));
+  const hr=ws.getRow(1);hr.height=32;hr.eachCell(c=>{c.fill=HF;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.alignment={vertical:'middle',horizontal:'center',wrapText:true};c.border=bd});
+  rows.forEach(r=>{const row=ws.addRow(r);row.eachCell({includeEmpty:true},(c,ci)=>{const k=cols[ci-1]||{};c.border=bd;c.alignment={vertical:'middle',wrapText:!!k.wrap,horizontal:k.al||(typeof c.value==='number'?'center':'left')};if(k.fmt&&typeof c.value==='number')c.numFmt=k.fmt});pintar&&pintar(row,r)});
+  if(rows.length)ws.autoFilter={from:{row:1,column:1},to:{row:1,column:cols.length}};return ws};
+ /* Resumo */
+ const R=RELD.res||{tot:0,ok:0,warn:0,bad:0},ws=wb.addWorksheet('Resumo',{properties:{tabColor:{argb:'FF1FBF9A'}},views:[{showGridLines:false}]});
+ ws.columns=[{width:34},{width:18},{width:18},{width:18},{width:18}];
+ const fil=`Eixo: ${S.eixo?'Eixo '+S.eixo:'Todos'}  ·  Projeto: ${S.proj?projNome(S.proj):'Todos'}  ·  Dimensão: ${S.dim||'Todas'}`;
+ const lin=(v,o={})=>{const r=ws.addRow(v);if(o.merge)ws.mergeCells(r.number,1,r.number,5);const c=r.getCell(1);c.font=o.font||{};c.alignment={vertical:'middle',wrapText:true};if(o.h)r.height=o.h;return r};
+ lin([D.cfg.titulo],{merge:1,font:{bold:true,size:16,color:{argb:'FF0E5A63'}},h:26});
+ lin([D.cfg.inst],{merge:1,font:{color:{argb:'FF667B82'}}});
+ lin([`Relatório de desempenho · ${y}`],{merge:1,font:{bold:true,size:12}});
+ lin([fil],{merge:1,font:{color:{argb:'FF667B82'}},h:30});
+ lin([`Gerado em ${new Date().toLocaleDateString('pt-BR')}`],{merge:1,font:{color:{argb:'FF667B82'}}});
+ ws.addRow([]);
+ lin(['Faixas de desempenho (% da meta anual)'],{merge:1,font:{bold:true,size:12}});
+ ['ok','warn','bad'].forEach(k=>{const r=ws.addRow([FX[k],fxTxt()[k]]);ws.mergeCells(r.number,2,r.number,5);[1,2].forEach(n=>r.getCell(n).border=bd);paint(r.getCell(1),k)});
+ ws.addRow([]);
+ lin(['Situação dos indicadores'],{merge:1,font:{bold:true,size:12}});
+ const pend=R.tot-R.ok-R.warn-R.bad;
+ [['Total de indicadores',R.tot,null],[FX.ok,R.ok,'ok'],[FX.warn,R.warn,'warn'],[FX.bad,R.bad,'bad'],['Sem meta ou sem resultado',pend,null]].forEach(([t,n,k])=>{const r=ws.addRow([t,n]);[1,2].forEach(i=>r.getCell(i).border=bd);r.getCell(2).alignment={horizontal:'center'};if(k&&n>0)paint(r.getCell(1),k)});
+ ws.addRow([]);
+ lin(['Desempenho médio (atingimento da meta)'],{merge:1,font:{bold:true,size:12}});
+ [['1º semestre',R.s1],['2º semestre',R.s2],['Anual',R.a]].forEach(([t,v])=>{const r=ws.addRow([t,v==null?'—':v]);[1,2].forEach(i=>r.getCell(i).border=bd);const c=r.getCell(2);c.alignment={horizontal:'center'};if(typeof v==='number'){c.numFmt='0.0%';pctK(c,v)}});
+ /* Agrupamentos */
+ const gcols=h=>[{h,w:58,wrap:1},{h:'Contexto',w:14},{h:'Indicadores',w:13},{h:'1º sem.',w:11,fmt:'0.0%'},{h:'2º sem.',w:11,fmt:'0.0%'},{h:'Anual',w:11,fmt:'0.0%'},{h:'Bom desempenho',w:15},{h:'Em atenção',w:12},{h:'Abaixo da meta',w:14}],
+  gp=(row,r)=>{[4,5,6].forEach(n=>pctK(row.getCell(n),r[n-1]));[[7,'ok'],[8,'warn'],[9,'bad']].forEach(([n,k])=>{if(r[n-1]>0)paint(row.getCell(n),k)})},
+  gr=L=>L.map(g=>[g.nome,g.sub||'',g.n,g.s1,g.s2,g.a,g.ok,g.warn,g.bad]);
+ folha('Por eixo',gcols('Eixo'),gr(RELD.eixo),gp);folha('Por projeto',gcols('Projeto estratégico'),gr(RELD.proj),gp);folha('Por dimensão',gcols('Dimensão'),gr(RELD.dim),gp);
+ /* Indicadores */
+ folha('Indicadores',[{h:'Indicador',w:62,wrap:1},{h:'Eixo',w:9},{h:'Projeto estratégico',w:44,wrap:1},{h:'Dimensão',w:30,wrap:1},{h:'Unidade',w:13},{h:'Meta '+y,w:12},{h:'1º sem.',w:12},{h:'2º sem.',w:12},{h:'Anual',w:12},{h:'% da meta',w:11,fmt:'0.0%'},{h:'Status',w:20}],
+  RELD.ind.map(i=>[i.nome,i.eixo,i.proj,i.dim,UN[i.un]||i.un,i.meta==null?'A definir':i.meta,i.s1,i.s2,i.a,i.r,i.stx]),
+  (row,r)=>{const i=RELD.ind[row.number-2];[6,7,8,9].forEach(n=>{const c=row.getCell(n);if(typeof c.value==='number')c.numFmt=FM[i.un]||'0.00'});if(typeof i.r==='number')paint(row.getCell(10),i.st);paint(row.getCell(11),i.st)});
+ const buf=await wb.xlsx.writeBuffer(),a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));a.download=`relatorio_desempenho_${y}${cor?'_colorido':''}.xlsx`;a.click();toast('Relatório gerado'+(cor?' com cores.':'.'))
+ }catch(e){console.error(e);toast('Não foi possível gerar o relatório.')}
+}
+
+render();
+</script>
+</body>
+</html>
