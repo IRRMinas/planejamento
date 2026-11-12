@@ -109,6 +109,7 @@ body.pres aside,body.pres .top{display:none}
 .rp{font-weight:800;color:var(--c)}.rep table{min-width:760px}.rep td:not(.nm2){white-space:nowrap}
 .hm{width:18px;height:18px;border-radius:5px;background:var(--c);cursor:pointer;display:inline-block}
 .proj .row{align-items:flex-start}.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--ln)}.fc small{display:block;color:var(--mu);font-weight:600;font-size:11px;margin-bottom:2px}.fc b{font-weight:600;font-size:12.5px;line-height:1.4}.fc b.nd{color:var(--mu);font-weight:400;font-style:italic}
+.bar .f{min-width:165px}
 </style>
 </head>
 <body>
@@ -209,7 +210,7 @@ D.cfg=Object.assign({},CFG0,D.cfg||{});if(!(D.cfg.verm>0)||!(D.cfg.verde>D.cfg.v
 const S={tab:'dash',eixo:0,proj:'',ano:2026,q:'',dim:''},cut=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
 const nf=(x,d)=>x.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
-const fm=(x,i)=>x==null?'—':i.un==='%'?nf(x,1)+'%':i.un==='num'?nf(x,0):nf(x,2)+' / 5,0';
+const fm=(x,i)=>x==null?'—':i.un==='%'||i.un==='inc'?nf(x,1)+'%':i.un==='num'?nf(x,0):nf(x,2)+' / 5,0';
 const yr=(i,y)=>i.anos[y]||(i.anos[y]=mk(null));
 const razao=(i,v,m)=>v==null||!(m>0)?null:i.sent==='min'?(v<=0?1:m/v):v/m;
 const nPre=(i,d)=>[d.s1,d.s2].filter(s=>val(s,i.un)!=null).length;
@@ -219,14 +220,14 @@ const wa=p=>{p=p.filter(x=>x[0]!=null);const w=p.reduce((a,x)=>a+x[1],0);return 
 const hoje=()=>new Date().toISOString().slice(0,10);
 const faixa=r=>r*100+1e-9>=D.cfg.verde?'ok':r*100+1e-9>=D.cfg.verm?'warn':'bad',FX={ok:'Bom desempenho',warn:'Em atenção',bad:'Abaixo da meta'};
 const fxTxt=()=>({ok:`${D.cfg.verde}% ou mais da meta`,warn:`De ${D.cfg.verm}% até menos de ${D.cfg.verde}%`,bad:`Menos de ${D.cfg.verm}% da meta`});
-const val=(s,u)=>u==='num'?(s[0]!=null?s[0]:null):(s[0]!=null&&s[1]>0?s[0]/s[1]*(u==='%'?100:1):null);
+const val=(s,u)=>u==='num'?(s[0]!=null?s[0]:null):(s[0]!=null&&s[1]>0?(u==='inc'?(s[0]-s[1])/s[1]*100:s[0]/s[1]*(u==='%'?100:1)):null);
 const cons=(i,d)=>{const t=[d.s1,d.s2].filter(s=>val(s,i.un)!=null);if(!t.length)return null;return i.un==='num'?t.reduce((a,s)=>a+s[0],0):val([t.reduce((a,s)=>a+s[0],0),t.reduce((a,s)=>a+s[1],0)],i.un)};
 function stat(i,y){const d=yr(i,y),m=d.meta,c=cons(i,d);if(m==null||m<=0)return['pend','Meta a definir',null];if(c==null)return['wait','Aguardando resultado',null];
  const r=razao(i,c,metaEf(i,d)),k=faixa(r);return[k,FX[k]+(nPre(i,d)===1?' · parcial':''),r]}
 const badge=s=>`<span class="badge ${s[0]}">${s[1]}</span>`;
 const eixoSel=()=>D.eixos.find(e=>e.n===S.eixo),eixoNome=n=>(D.eixos.find(e=>e.n===n)||{}).nome||'',projNome=id=>(D.projs.find(p=>p.id===id)||{}).nome||'';
 const doEixo=()=>D.inds.filter(i=>!S.eixo||i.eixo===S.eixo);
-const doProj=()=>doEixo().filter(i=>!S.proj||i.proj===S.proj),base=()=>doProj().filter(i=>!S.dim||i.dim===S.dim);
+const doProj=()=>doEixo().filter(i=>!S.proj||i.proj===S.proj),base=()=>doProj().filter(i=>(!S.dim||i.dim===S.dim)&&(!S.ind||i.id===S.ind));
 const filt=()=>base().filter(i=>i.nome.toLowerCase().includes(S.q.toLowerCase()));
 const NOMES={dash:'Dashboard',rel:'Relatório',plan:'Central de planilhas',cfg:'Configurações'};
 function go(t){S.tab=t;$$('.v').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));$$('.nav[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#crumb').textContent=NOMES[t];
@@ -244,18 +245,20 @@ function render(){
  if(S.eixo&&!eixoSel())S.eixo=0;
  const pjs=D.projs.filter(p=>!S.eixo||p.eixo===S.eixo);if(S.proj&&!pjs.find(p=>p.id===S.proj))S.proj='';
  const dims=[...new Set(doProj().map(i=>i.dim).filter(Boolean))];if(S.dim&&!dims.includes(S.dim))S.dim='';
- const hasF=Boolean(S.eixo||S.proj||S.dim);
+ const inds=doProj().filter(i=>!S.dim||i.dim===S.dim);if(S.ind&&!inds.find(i=>i.id===S.ind))S.ind='';const hasF=Boolean(S.eixo||S.proj||S.dim||S.ind);
+ const cn=p=>p.coord||p.aba,dup=p=>pjs.filter(x=>cn(x)===cn(p)).length>1;
  $$('.fb').forEach(b=>b.innerHTML=`<div class="f"><label>Eixo estratégico</label><select onchange="S.eixo=+this.value;S.proj='';S.dim='';render()"><option value="0">Todos os eixos (${D.eixos.length})</option>${D.eixos.map(e=>`<option value="${e.n}" ${e.n===S.eixo?'selected':''}>Eixo ${e.n} · ${esc(e.nome)}</option>`).join('')}</select></div>
- <div class="f"><label>Projeto estratégico</label><select onchange="S.proj=this.value;S.dim='';render()"><option value="">Todos os projetos (${pjs.length})</option>${pjs.map(p=>`<option value="${esc(p.id)}" title="${esc(p.nome)}" ${p.id===S.proj?'selected':''}>${esc(cut(p.nome,54))+(p.coord?' · '+esc(p.coord.split(' ').slice(0,2).join(' ')):'')}</option>`).join('')}</select></div>
- <div class="f"><label>Dimensão do indicador</label><select onchange="S.dim=this.value;render()"><option value="">Todas as dimensões (${dims.length})</option>${dims.map(d=>`<option ${d===S.dim?'selected':''}>${esc(d)}</option>`).join('')}</select></div>
+ <div class="f"><label>Coordenador</label><select onchange="S.proj=this.value;S.dim='';render()"><option value="">Todos os coordenadores (${pjs.length})</option>${pjs.map(p=>`<option value="${esc(p.id)}" title="${esc(p.nome)}" ${p.id===S.proj?'selected':''}>${esc(cn(p))}${dup(p)?' · '+esc(cut(p.nome,30)):''}</option>`).join('')}</select></div>
+ <div class="f"><label>Dimensão</label><select onchange="S.dim=this.value;render()"><option value="">Todas as dimensões (${dims.length})</option>${dims.map(d=>`<option ${d===S.dim?'selected':''}>${esc(d)}</option>`).join('')}</select></div>
+ <div class="f"><label>Indicador</label><select onchange="S.ind=this.value;render()"><option value="">Todos os indicadores (${inds.length})</option>${inds.map(i=>`<option value="${esc(i.id)}" title="${esc(i.nome)}" ${i.id===S.ind?'selected':''}>${esc(cut(i.nome,60))}</option>`).join('')}</select></div>
  <div><label>Ano de referência</label><div class="yrs">${ANOS.map(a=>`<button class="${a===S.ano?'on':''}" onclick="S.ano=${a};render()">${a}</button>`).join('')}</div></div>
- ${hasF?`<button class="btn" onclick="S.eixo=0;S.proj='';S.dim='';render()" title="Limpar todos os filtros">✕ Limpar filtros</button>`:''}`);
+ ${hasF?`<button class="btn" onclick="S.eixo=0;S.proj='';S.dim='';S.ind='';render()" title="Limpar todos os filtros">✕ Limpar filtros</button>`:''}`);
  const L=filt(),all=base(),y=S.ano,A=D.cfg.verm/100;
  if(S.tab==='dash'){
   const ex=eixoSel()||(D.eixos.length===1?D.eixos[0]:null),avg=wa(all.map(i=>[stat(i,y)[2],pw(i)]));
-  $('#hero').innerHTML=`<div><small>${ex?'Eixo estratégico '+ex.n:'Visão geral'}</small><h2>${ex?esc(ex.nome):'Todos os eixos'}</h2></div><div><small>Objetivo estratégico</small><p>${ex?(ex.obj?'“'+esc(ex.obj)+'”':'<span style="opacity:.7">Objetivo a definir. Selecione um projeto e use ✎ para preencher.</span>'):`${D.eixos.length} eixos e ${D.inds.length} indicadores no ciclo 2026–2029. Escolha um eixo para ver o objetivo.`}</p></div><div>${ring(avg)}</div>`;
+  $('#hero').innerHTML=`<div><small>${ex?'Eixo estratégico '+ex.n:'Visão geral'}</small><h2>${ex?esc(ex.nome):'Todos os eixos'}</h2></div><div><small>Objetivo estratégico</small><p>${ex?(ex.obj?'“'+esc(ex.obj)+'”':'<span style="opacity:.7">Objetivo a definir. Selecione um coordenador e use ✎ para preencher.</span>'):`${D.eixos.length} eixos e ${D.inds.length} indicadores no ciclo 2026–2029. Escolha um eixo para ver o objetivo.`}</p></div><div>${ring(avg)}</div>`;
   const pj=S.proj?D.projs.find(p=>p.id===S.proj):(pjs.length===1?pjs[0]:null);
-  $('#proj').style.display=pjs.length?'':'none';$('#proj').innerHTML=pj?ficha(pj,all,y):`<small>Projetos estratégicos</small><p>${pjs.length} projetos ${S.eixo?'neste eixo':'no ciclo'}. Selecione um projeto para ver o nome completo.</p>`;
+  $('#proj').style.display=pjs.length?'':'none';$('#proj').innerHTML=pj?ficha(pj,all,y):`<small>Projetos estratégicos</small><p>${pjs.length} projetos ${S.eixo?'neste eixo':'no ciclo'}. Selecione um coordenador para ver o projeto e a ficha.</p>`;if(S.ind){const I=D.inds.find(x=>x.id===S.ind);if(I)$('#proj').insertAdjacentHTML('beforeend',`<div class="fg" style="grid-template-columns:1fr 1fr"><div class="fc"><small>Relevância</small><b style="font-weight:400">${esc(I.just||'A definir')}</b></div><div class="fc"><small>Fórmula</small><b style="font-weight:400">${esc(I.formula||'A definir')}</b></div></div>`)}
   const st=all.map(i=>stat(i,y)[0]),c=k=>st.filter(s=>s===k).length;
   $('#kpis').innerHTML=[['Total de indicadores',all.length,'Monitoramento semestral',''],[FX.ok,c('ok'),fxTxt().ok,'--ok'],[FX.warn,c('warn'),fxTxt().warn,'--warn'],[FX.bad,c('bad'),fxTxt().bad,'--bad'],['Desempenho médio',avg==null?'—':nf(avg*100,1)+'%','Atingimento das metas','--pri']].map(k=>`<div class="kpi" style="${k[3]?`--c:var(${k[3]})`:''}"><span>${k[0]}</span><b>${k[1]}</b><small>${k[2]}</small></div>`).join('');
   $('#cnt').textContent=L.length;extras(all,y);
@@ -296,12 +299,12 @@ function det(id){const i=D.inds.find(x=>x.id===id),y=S.ano,d=yr(i,y),s=stat(i,y)
  <div class="row" style="margin-bottom:14px"><div><div class="mt">Meta ${y}</div><div class="big2" style="color:var(--tx)">${d.meta==null?'A definir':fm(d.meta,i)}</div></div><div style="text-align:center"><div class="mt">Resultado</div><div class="big2 ${s[0]}">${fm(c,i)}</div></div>${badge(s)}</div>
  <div class="sems" style="margin-bottom:14px">${sm('1º semestre',d.s1)}${sm('2º semestre',d.s2)}</div>
  ${evo(i)}<div class="traj" style="margin-bottom:16px">${ANOS.map(a=>`<span class="${a===y?'on':''}">${a}<b>${fm(yr(i,a).meta,i)}</b></span>`).join('')}</div>
- ${i.just?`<p style="color:var(--mu);line-height:1.6;margin-bottom:14px">${esc(i.just)}</p>`:''}${i.formula?`<div class="note" style="margin-bottom:12px"><b>Fórmula:</b> ${esc(i.formula)}</div>`:''}${d.obs?`<div class="note an"><b>Análise (${y}):</b> ${esc(d.obs)}</div>`:''}${d.acao?`<div class="note" style="margin-top:10px"><b>Plano de ação:</b> ${esc(d.acao)}</div>`:flag(i,y)}<div class="note" style="margin-top:10px"><b>Fonte:</b> ${esc(pf.fonte||'a definir')} · <b>Coleta:</b> ${esc(i.resp||pf.resp||'a definir')} · <b>Periodicidade:</b> ${esc(pf.per||'Semestral')} · <b>Sentido:</b> ${i.sent==='min'?'quanto menor, melhor':'quanto maior, melhor'} · <b>Peso:</b> ${pw(i)} · <b>Última atualização:</b> ${d.upd?d.upd.split('-').reverse().join('/'):'—'}</div></div>
+ ${i.just?`<div class="note" style="margin-bottom:12px"><b>Relevância:</b> ${esc(i.just)}</div>`:''}${i.formula?`<div class="note" style="margin-bottom:12px"><b>Fórmula:</b> ${esc(i.formula)}</div>`:''}${d.obs?`<div class="note an"><b>Análise (${y}):</b> ${esc(d.obs)}</div>`:''}${d.acao?`<div class="note" style="margin-top:10px"><b>Plano de ação:</b> ${esc(d.acao)}</div>`:flag(i,y)}<div class="note" style="margin-top:10px"><b>Fonte:</b> ${esc(pf.fonte||'a definir')} · <b>Coleta:</b> ${esc(i.resp||pf.resp||'a definir')} · <b>Periodicidade:</b> ${esc(pf.per||'Semestral')} · <b>Sentido:</b> ${i.sent==='min'?'quanto menor, melhor':'quanto maior, melhor'} · <b>Peso:</b> ${pw(i)} · <b>Última atualização:</b> ${d.upd?d.upd.split('-').reverse().join('/'):'—'}</div></div>
  <div class="mf"><button class="btn" onclick="edit('${id}')">✎ Editar ficha</button><button class="btn p" onclick="lanc('${id}')">Preencher semestres ${y}</button></div>`)}
 /* calculadora semestral */
 function lanc(id){const i=D.inds.find(x=>x.id===id),y=S.ano,d=yr(i,y);
  const sem=(k,t)=>`<div class="blk"><h4>${t}</h4><div class="fld"><label>${esc(i.a||'Valor realizado')}</label><input id="${k}n" type="number" step="any" min="0" value="${nv(d[k][0])}" oninput="prev()"></div>${i.un==='num'?'':`<div class="fld"><label>${esc(i.b)}</label><input id="${k}d" type="number" step="any" min="0" value="${nv(d[k][1])}" oninput="prev()"></div>`}<div class="rc"><span>Resultado calculado</span><b id="${k}r">—</b></div></div>`;
- const uLbl=i.un==='%'?'%':i.un==='num'?'quantidade':'nota';
+ const uLbl=i.un==='%'||i.un==='inc'?'%':i.un==='num'?'quantidade':'nota';
  abrir(`<div class="mh"><div><small>Eixo ${i.eixo} · ${y}</small><h3>Metas e resultados semestrais</h3></div><button onclick="fechar()" aria-label="Fechar">×</button></div><div class="mb"><h4 style="margin-bottom:14px;font-size:15px">${esc(i.nome)}</h4>
  <div class="blk m"><div class="r2"><div class="fld" style="margin:0"><label>Ano de referência</label><select id="ly" onchange="S.ano=+this.value;lanc('${id}')">${ANOS.map(a=>`<option ${a===y?'selected':''}>${a}</option>`).join('')}</select></div><div class="fld" style="margin:0"><label>Meta anual (${uLbl})</label><input id="lm" type="number" step="any" min="0" placeholder="A definir" value="${nv(d.meta)}" oninput="prev()"></div></div></div>
  <div class="r2">${sem('s1','1º semestre · jan–jun')}${sem('s2','2º semestre · jul–dez')}</div>
@@ -319,7 +322,7 @@ function edit(id){const i=id?D.inds.find(x=>x.id===id):null,e=i?D.eixos.find(x=>
  <div class="blk"><h4>1. Eixo estratégico, 2. Objetivo e Projeto estratégico</h4><div class="r2" style="grid-template-columns:110px 1fr"><div class="fld"><label>Nº do eixo</label><input id="fN" type="number" min="1" value="${e.n}" oninput="ePre()"></div><div class="fld"><label>Nome do eixo</label><input id="fE" value="${esc(e.nome)}"></div></div><div class="fld"><label>Objetivo estratégico (o que queremos alcançar?)</label><textarea id="fO" rows="2">${esc(e.obj)}</textarea></div>
  <div class="fld" style="margin:0"><label>Projeto estratégico</label><select id="fPS" onchange="if(this.value!=='__new__')$('#fPN').value=this.value;else{$('#fPN').value='';$('#fPN').focus()}"><option value="__new__">＋ Cadastrar novo projeto ou editar abaixo…</option>${D.projs.map(p=>`<option value="${esc(p.nome)}" ${p.id===pj.id?'selected':''}>${esc(cut(p.nome,78))}</option>`).join('')}</select><textarea id="fPN" rows="2" placeholder="Nome completo do projeto estratégico">${esc(pj.nome)}</textarea></div></div>
  <div class="blk"><h4>3. Indicador (como saberemos se estamos avançando?)</h4><div class="fld"><label>Nome do indicador</label><input id="fI" value="${v('nome')}"></div>
- <div class="r2"><div class="fld"><label>Dimensão</label><input id="fD" value="${v('dim')}" placeholder="Ex.: Pessoas e Cultura Organizacional"></div><div class="fld"><label>Tipo de cálculo</label><select id="fU"><option value="%" ${!i||i.un==='%'?'selected':''}>Percentual (%) — numerador / total</option><option value="nota" ${i&&i.un==='nota'?'selected':''}>Média / nota — soma / total</option><option value="num" ${i&&i.un==='num'?'selected':''}>Número absoluto — somatório</option></select></div></div>
+ <div class="r2"><div class="fld"><label>Dimensão</label><input id="fD" value="${v('dim')}" placeholder="Ex.: Pessoas e Cultura Organizacional"></div><div class="fld"><label>Tipo de cálculo</label><select id="fU"><option value="%" ${!i||i.un==='%'?'selected':''}>Percentual (%) — numerador / total</option><option value="nota" ${i&&i.un==='nota'?'selected':''}>Média / nota — soma / total</option><option value="num" ${i&&i.un==='num'?'selected':''}>Número absoluto — somatório</option><option value="inc" ${i&&i.un==='inc'?'selected':''}>Incremento % — (atual − anterior) ÷ anterior</option></select></div></div>
  <div class="r2"><div class="fld"><label>Rótulo do numerador / quantidade</label><input id="fA" value="${v('a')}"></div><div class="fld"><label>Rótulo do denominador (se aplicável)</label><input id="fB" value="${v('b')}"></div></div>
  <div class="r3"><div class="fld"><label>Sentido da meta</label><select id="fS"><option value="max" ${!i||i.sent!=='min'?'selected':''}>Quanto maior, melhor</option><option value="min" ${i&&i.sent==='min'?'selected':''}>Quanto menor, melhor</option></select></div><div class="fld"><label>Peso na média</label><input id="fW" type="number" min="0.1" step="any" value="${i?pw(i):1}"></div><div class="fld"><label>Responsável</label><input id="fR" value="${v('resp')}" placeholder="Nome ou setor"></div></div>
  <div class="fld"><label>Fórmula de cálculo</label><input id="fF" value="${v('formula')}"></div><div class="fld" style="margin:0"><label>Justificativa (o que avalia)</label><textarea id="fJ" rows="3">${v('just')}</textarea></div></div>
@@ -424,7 +427,7 @@ async function expRel(){
   paint=(c,k)=>{if(cor&&PAL[k]){c.fill={type:'pattern',pattern:'solid',fgColor:{argb:PAL[k].bg}};c.font={bold:true,color:{argb:PAL[k].fg}}}},
   pctK=(c,v)=>{if(typeof v==='number')paint(c,faixa(v))},
   HF={type:'pattern',pattern:'solid',fgColor:{argb:'FF0E5A63'}},
-  UN={'%':'Percentual',num:'Número',nota:'Nota (1–5)'},FM={'%':'0.0"%"',num:'0',nota:'0.00'};
+  UN={'%':'Percentual',num:'Número',nota:'Nota (1–5)',inc:'Incremento %'},FM={'%':'0.0"%"',num:'0',nota:'0.00',inc:'0.0"%"'};
  const folha=(nome,cols,rows,pintar)=>{
   const ws=wb.addWorksheet(nome,{views:[{state:'frozen',ySplit:1}],properties:{tabColor:{argb:'FF0E5A63'}}});
   ws.columns=cols.map(c=>({header:c.h,width:c.w}));
@@ -490,11 +493,11 @@ function montar(abas,res,aj,cfg){
   const H=(v[9]||[]).map(sa),ci=H.findIndex(h=>h.startsWith('indicador')),cj=H.findIndex(h=>/^(justif|relev)/.test(h)),cf=H.findIndex(h=>h.startsWith('formula'));
   let cd=H.findIndex(h=>h.startsWith('dimens'));const L=v.slice(10).filter(r=>ci>=0&&t_(r[ci]));
   if(cd<0)cd=[1,2].find(k=>k!==ci&&L.some(r=>/^(esfor|result)/i.test(t_(r[k]))));
-  L.forEach((r,k)=>{const f=t_(r[cf]),nome=t_(r[ci]).replace(/;+$/,''),id=p.id+'.'+(parseInt(r[0])||k+1),
+  L.forEach((r,k)=>{const f=t_(r[cf]).replace(/;+$/,''),nome=t_(r[ci]).replace(/;+$/,''),id=p.id+'.'+(parseInt(r[0])||k+1),
    isNum=(/^(n[úu]mero|n[º°o.]\s|quantidade|volume)/i.test(nome)||/^som/i.test(f))&&!/[\/÷]/.test(f),
-   un=isNum?'num':/100|%/.test(f)||/^(%|percentual|taxa)/i.test(nome)?'%':/[\/÷]/.test(f)?'nota':'num',
+   inc=/anterior/i.test(f)&&/[−–-]/.test(f),un=inc?'inc':isNum?'num':/100|%/.test(f)||/^(%|percentual|taxa)/i.test(nome)?'%':/[\/÷]/.test(f)?'nota':'num',
    q=f.match(/^[(\[]+\s*(.+?)\s*[\/÷]\s*(.+?)\s*[)\]]+\s*(?:[×x*]\s*100)?\s*\.?$/),o=prev.find(x=>nk(x.nome)===nk(nome));
-   I.push(Object.assign({id,proj:p.id,eixo:n,dim:t_(r[cd]),nome,un,a:isNum?'Quantidade realizada':cut(q?q[1]:un==='%'?'Numerador':'Soma das notas',90),b:isNum?'Referência':cut(q?q[2]:un==='%'?'Denominador':'Nº de respondentes',90),formula:f,just:t_(r[cj]),anos:R[id]||(o&&o.anos)||{}},AJ[id]||{}))})});
+   I.push(Object.assign({id,proj:p.id,eixo:n,dim:t_(r[cd]),nome,un,a:inc?'Resultado do período atual':isNum?'Quantidade realizada':cut(q?q[1]:un==='%'?'Numerador':'Soma das notas',90),b:inc?'Resultado do período anterior':isNum?'Referência':cut(q?q[2]:un==='%'?'Denominador':'Nº de respondentes',90),formula:f,just:t_(r[cj]),anos:R[id]||(o&&o.anos)||{}},AJ[id]||{}))})});
  E.sort((a,b)=>a.n-b.n);D.eixos=E;D.projs=P;D.inds=I;D.v=4;
  if(cfg&&cfg[0])try{Object.assign(D.cfg,JSON.parse(cfg[0][1]))}catch(e){}}
 async function carregar(){if(!apiUrl())return stat_('local');stat_('load');try{const j=await(await fetch(apiUrl())).json();if(!j.abas)throw j;montar(j.abas,j.res||[],j.aj||[],j.cfg||[]);save();stat_('ok');render()}catch(e){console.error(e);stat_('err');toast('Não foi possível ler o Google Sheets.')}}
