@@ -110,13 +110,21 @@ body.pres aside,body.pres .top{display:none}
 .hm{width:18px;height:18px;border-radius:5px;background:var(--c);cursor:pointer;display:inline-block}
 .proj .row{align-items:flex-start}.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--ln)}.fc small{display:block;color:var(--mu);font-weight:600;font-size:11px;margin-bottom:2px}.fc b{font-weight:600;font-size:12.5px;line-height:1.4}.fc b.nd{color:var(--mu);font-weight:400;font-style:italic}
 .bar .f{min-width:165px}
+.gg{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}.gc{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:20px}.gc.w{grid-column:1/-1}.gc h3{font-size:14px;margin-bottom:14px}
+.c-ok{background:var(--ok)}.c-warn{background:var(--warn)}.c-bad{background:var(--bad)}.c-pend{background:var(--mu)}
+.gb{display:grid;grid-template-columns:minmax(90px,38%) 1fr 44px;gap:10px;align-items:center;margin:9px 0;font-size:12.5px}.gb>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gb>div{height:10px;background:var(--soft);border-radius:6px;overflow:hidden}.gb i{display:block;height:100%;border-radius:6px}.gb b{text-align:right}
+.stk{display:flex;height:34px;border-radius:10px;overflow:hidden;background:var(--soft)}.stk i{display:grid;place-items:center;color:#fff;font-weight:700;font-size:12px;font-style:normal}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:12.5px}.lk i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.cols{display:flex;gap:22px;height:200px}.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:flex-end;font-size:12.5px}.col>div{width:100%;max-width:80px;flex:1;display:flex;align-items:flex-end;background:var(--soft);border-radius:10px;overflow:hidden}.col>div i{display:block;width:100%}
+.at{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--ln);padding:10px 2px;color:inherit;font:inherit;cursor:pointer}.at small{display:block;color:var(--mu);font-size:11.5px}.at em{font-style:normal;font-weight:700;color:var(--bad)}
 </style>
 </head>
 <body>
 <aside>
   <div class="logo"><i>F</i><div><b>FIOCRUZ MINAS</b><small>Instituto René Rachou</small></div></div>
   <div class="sec">Acompanhamento</div>
-  <button class="nav on" data-t="dash" onclick="go('dash')"><u>◧</u>Dashboard</button>
+  <button class="nav on" data-t="dash" onclick="go('dash')"><u>◧</u>Painel</button>
+  <button class="nav" data-t="graf" onclick="go('graf')"><u>◔</u>Dashboard</button>
   <button class="nav" data-t="rel" onclick="go('rel')"><u>▤</u>Relatório</button>
   <button class="nav" data-t="plan" onclick="go('plan')"><u>⇅</u>Central de planilhas</button>
   <div class="sec" style="margin-top:14px">Ciclo estratégico</div>
@@ -136,6 +144,11 @@ body.pres aside,body.pres .top{display:none}
     <div class="note" id="resumo" style="margin-bottom:16px;font-size:12.5px"></div><div class="kpis" id="kpis"></div><div id="eixosCards"></div><div id="mapa"></div>
     <div class="tools"><div><h3 style="display:inline">Indicadores e metas</h3><span class="cnt" id="cnt"></span></div><div class="r"><div class="yrs" id="vt"></div><input id="q" placeholder="Buscar indicador" oninput="S.q=this.value;render()"></div></div>
     <div class="grid" id="cards"></div>
+  </section>
+  <section class="v" id="v-graf">
+    <div class="head"><div><h1>Dashboard</h1><p class="sub">Gráficos de desempenho conforme os filtros selecionados.</p></div></div>
+    <div class="bar fb"></div>
+    <div id="gr"></div>
   </section>
   <section class="v" id="v-rel">
     <div class="head"><div><h1>Relatório de desempenho</h1><p class="sub">Por eixo, projeto e dimensão · 1º semestre, 2º semestre e anual.</p></div><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center"><label class="chk"><input type="checkbox" id="rCor" checked> Mostrar cores (verde / amarelo / vermelho)</label><button class="btn g" onclick="expRel()">⇩ Exportar relatório (Excel)</button></div></div>
@@ -229,7 +242,7 @@ const eixoSel=()=>D.eixos.find(e=>e.n===S.eixo),eixoNome=n=>(D.eixos.find(e=>e.n
 const doEixo=()=>D.inds.filter(i=>!S.eixo||i.eixo===S.eixo);
 const doProj=()=>doEixo().filter(i=>!S.proj||i.proj===S.proj),base=()=>doProj().filter(i=>(!S.dim||i.dim===S.dim)&&(!S.ind||i.id===S.ind));
 const filt=()=>base().filter(i=>i.nome.toLowerCase().includes(S.q.toLowerCase()));
-const NOMES={dash:'Dashboard',rel:'Relatório',plan:'Central de planilhas',cfg:'Configurações'};
+const NOMES={dash:'Painel',graf:'Dashboard',rel:'Relatório',plan:'Central de planilhas',cfg:'Configurações'};
 function go(t){S.tab=t;$$('.v').forEach(v=>v.classList.toggle('on',v.id==='v-'+t));$$('.nav[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#crumb').textContent=NOMES[t];
  if(t==='cfg'){$('#cTit').value=D.cfg.titulo;$('#cInst').value=D.cfg.inst;$('#cApi').value=D.cfg.api||'';cfgPreencher();$('#cTh').value=D.cfg.tema||''}$('main').scrollTop=0;render()}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600)}
@@ -275,7 +288,7 @@ function render(){
    <div class="al"><div class="pb"><i style="width:${Math.min((r||0)*100,100)}%"></i></div><em>${r==null?'—':Math.round(r*100)+'%'}</em></div>
    <span class="sd"><i class="dot ${dc(d.s1,i,d)}"></i>${fm(val(d.s1,i.un),i)}</span><span class="sd"><i class="dot ${dc(d.s2,i,d)}"></i>${fm(val(d.s2,i.un),i)}</span></div>`};
   $('#cards').innerHTML=L.length?(vis==='list'?'<div class="lh"><span>Indicador</span><span>Meta '+y+'</span><span>Resultado</span><span>Alcance</span><span>1º sem.</span><span>2º sem.</span></div>'+L.map(row).join(''):L.map(card).join('')):'<p class="sub">Nenhum indicador encontrado.</p>'}
- if(S.tab==='rel')relatorio();
+ if(S.tab==='rel')relatorio();if(S.tab==='graf')graficos(all,y);
 }
 function flag(i,y){const d=yr(i,y);return stat(i,y)[0]==='bad'&&!d.acao?'<div class="note an">⚠ Abaixo da meta · sem plano de ação</div>':''}
 function extras(all,y){
@@ -501,6 +514,26 @@ function montar(abas,res,aj,cfg){
  E.sort((a,b)=>a.n-b.n);D.eixos=E;D.projs=P;D.inds=I;D.v=4;
  if(cfg&&cfg[0])try{Object.assign(D.cfg,JSON.parse(cfg[0][1]))}catch(e){}}
 async function carregar(){if(!apiUrl())return stat_('local');stat_('load');try{const j=await(await fetch(apiUrl())).json();if(!j.abas)throw j;montar(j.abas,j.res||[],j.aj||[],j.cfg||[]);save();stat_('ok');render()}catch(e){console.error(e);stat_('err');toast('Não foi possível ler o Google Sheets.')}}
+function graficos(all,y){
+ const st=all.map(i=>stat(i,y)),cnt=k=>st.filter(x=>x[0]===k).length,tot=all.length,pk={ok:cnt('ok'),warn:cnt('warn'),bad:cnt('bad')};pk.pend=tot-pk.ok-pk.warn-pk.bad;
+ const ra=L=>wa(L.map(i=>[stat(i,y)[2],pw(i)])),rt=(L,k)=>wa(L.map(i=>{const d=yr(i,y);return[d.meta>0?razao(i,val(d[k],i.un),i.un==='num'?d.meta/2:d.meta):null,pw(i)]})),
+ cl=r=>r==null?'pend':faixa(r),pc=r=>r==null?'—':Math.round(r*100)+'%',w=r=>r==null?0:Math.min(r*100,100),
+ br=L=>L.length?L.map(([n,r,t])=>`<div class="gb"><span title="${esc(t||n)}">${esc(n)}</span><div><i class="c-${cl(r)}" style="width:${w(r)}%"></i></div><b>${pc(r)}</b></div>`).join(''):'<p class="sub">Sem dados.</p>',
+ ord=L=>L.sort((a,b)=>(b[1]??-1)-(a[1]??-1)),
+ pe=ord(D.eixos.filter(e=>all.some(i=>i.eixo===e.n)).map(e=>['Eixo '+e.n+' · '+e.nome,ra(all.filter(i=>i.eixo===e.n))])),
+ pcd=ord(D.projs.filter(p=>all.some(i=>i.proj===p.id)).map(p=>[p.coord||p.aba,ra(all.filter(i=>i.proj===p.id)),p.nome])),
+ tp=i=>(i.dim||'').split(/\s*[-–]\s*/)[0].trim(),ps=[...new Set(all.map(tp).filter(Boolean))].map(t=>[t,ra(all.filter(i=>tp(i)===t))]),
+ ev=[['1º semestre',rt(all,'s1')],['2º semestre',rt(all,'s2')],['Anual',ra(all)]],
+ g=ra(all),C=2*Math.PI*52,
+ bad=all.map((i,k)=>[i,st[k]]).filter(x=>x[1][0]==='bad').sort((a,b)=>(a[1][2]??0)-(b[1][2]??0)).slice(0,8),sm=all.filter(i=>!(yr(i,y).meta>0)).length;
+ const don=`<svg viewBox="0 0 120 120" width="150" height="150" role="img" aria-label="Desempenho geral ${pc(g)}"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--soft)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(${g==null?'--mu':'--'+cl(g)})" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C*w(g)/100} ${C}" transform="rotate(-90 60 60)"/><text x="60" y="66" text-anchor="middle" font-size="22" font-weight="800" fill="var(--tx)">${pc(g)}</text></svg>`;
+ $('#gr').innerHTML=(tot?(pk.ok+pk.warn+pk.bad?'':`<div class="note" style="margin-bottom:16px">Ainda não há resultados lançados para ${y}. Clique em um indicador no Painel e use “Preencher semestres” para os gráficos aparecerem.</div>`):'<p class="sub">Nenhum indicador para os filtros selecionados.</p>')+`<div class="gg">
+ <div class="gc w"><h3>Visão geral · ${y}</h3><div style="display:flex;gap:28px;align-items:center;flex-wrap:wrap">${don}<div style="flex:1;min-width:240px"><div class="stk">${['ok','warn','bad','pend'].filter(k=>pk[k]).map(k=>`<i class="c-${k}" style="flex:${pk[k]}">${pk[k]}</i>`).join('')}</div><div class="lgd">${[['ok',FX.ok],['warn',FX.warn],['bad',FX.bad],['pend','Sem meta ou sem lançamento']].map(([k,l])=>`<span class="lk"><i class="c-${k}"></i>${l} · <b>${pk[k]}</b></span>`).join('')}</div></div></div></div>
+ <div class="gc"><h3>Desempenho por eixo</h3>${br(pe)}</div>
+ <div class="gc"><h3>Desempenho por coordenador</h3>${br(pcd)}</div>
+ <div class="gc"><h3>Evolução por semestre</h3><div class="cols">${ev.map(([n,r])=>`<div class="col"><b>${pc(r)}</b><div><i class="c-${cl(r)}" style="height:${w(r)}%"></i></div><span>${n}</span></div>`).join('')}</div></div>
+ <div class="gc"><h3>Esforço × Resultado</h3>${br(ps)}</div>
+ <div class="gc w"><h3>Indicadores abaixo da meta</h3>${bad.length?bad.map(([i,s_])=>`<button class="at" onclick="det('${i.id}')"><span><b>${esc(i.nome)}</b><small>${esc((D.projs.find(p=>p.id===i.proj)||{}).coord||'')} · Eixo ${i.eixo}</small></span><em>${pc(s_[2])}</em></button>`).join(''):'<p class="sub">Nenhum indicador abaixo da meta.</p>'}${sm?`<p class="sub" style="margin-top:12px">${sm} indicador(es) ainda sem meta definida para ${y}.</p>`:''}</div></div>`}
 function boot(){if(D.v!==4){montar(SNAP,[],[],[]);save()}render();apiUrl()?carregar():stat_('local')}
 boot();
 </script>
